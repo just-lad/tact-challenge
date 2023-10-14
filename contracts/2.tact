@@ -19,30 +19,30 @@ message(0x44) Refund {
 
 contract Task2 with Deployable {
   admin: Address;
-  lastsender: Address;
 
   init(admin: Address) {
     self.admin = admin;
-    self.lastsender = newAddress(0, 0);
   }
   
   receive(msg: Refund) {
+    let income: Context = context();
     send(SendParameters{
-        to: self.lastsender,
-        value: msg.value,
-        mode: msg.mode,
-        bounce: msg.bounce,
-        body: msg.body
-  }
+        to: msg.sender,
+        value: income.value,
+        mode: SendIgnoreErrors,
+        bounce: income.bounced,
+        body: msg.toCell()
+    });
   }
 
   receive(msg: Slice) {
-    self.lastsender = sender()
+    let income: Context = context();
     send(SendParameters{
-        to: self.lastsender,
-        value: msg.value,
-        mode: msg.mode,
-        bounce: msg.bounce,
-        body: self.lastsender.toCell()
-  }
+        to: income.sender,
+        value: income.value,
+        mode: SendIgnoreErrors,
+        bounce: income.bounced,
+        body: msg.asCell()
+  });
+}
 }
