@@ -96,13 +96,17 @@ contract Task4 with Deployable {
 
     // Otherwise (all good) send the locked nft back
     else {
+        let ctx: Context = context();
         send(SendParameters{
             to: self.nft_owner!!,
             value: 0,
             mode: SendRemainingValue,
-            body: OwnershipAssigned{
+            body: Transfer{
                 queryId: msg.queryId,
-                prevOwner: myAddress(),
+                newOwner: sender(),
+                responseDestination: sender(),
+                customPayload: null,
+                forwardAmount: ctx.readForwardFee(),
                 forwardPayload: emptyCell().asSlice()
             }.toCell()});
         self.l_nft = null;
