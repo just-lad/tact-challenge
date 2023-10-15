@@ -25,8 +25,7 @@ contract Task2 with Deployable {
   }
   
   receive(msg: Refund) {
-    let income: Context = context();
-    require(income.sender == self.admin, "fraud");
+    require(sender() == self.admin, "fraud");
     send(SendParameters{
         to: msg.sender,
         value: 0,
