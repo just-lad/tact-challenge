@@ -100,8 +100,8 @@ contract Task4 with Deployable {
             mode: SendRemainingBalance + SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
-                newOwner: sender(),
-                responseDestination: sender(),
+                newOwner: self.nft_owner!!,
+                responseDestination: self.l_nft!!,
                 customPayload: null,
                 forwardAmount: 0,
                 forwardPayload: emptyCell().asSlice()
