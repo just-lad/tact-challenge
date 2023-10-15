@@ -68,9 +68,8 @@ contract Task4 with Deployable {
     }
     else {
         // holds an nft then return the incoming nft back to the sender
-        let ctx: Context = context();
         send(SendParameters{
-            to: sender(),
+            to: self.l_nft!!,
             value: 0,
             mode: SendRemainingValue,
             body: Transfer{
@@ -78,7 +77,7 @@ contract Task4 with Deployable {
                 newOwner: sender(),
                 responseDestination: sender(),
                 customPayload: null,
-                forwardAmount: ctx.readForwardFee(),
+                forwardAmount: 0,
                 forwardPayload: msg.forwardPayload
             }.toCell()});
     }
@@ -96,9 +95,8 @@ contract Task4 with Deployable {
 
     // Otherwise (all good) send the locked nft back
     else {
-        let ctx: Context = context();
         send(SendParameters{
-            to: self.nft_owner!!,
+            to: self.l_nft!!,
             value: 0,
             mode: SendRemainingValue,
             body: Transfer{
@@ -106,7 +104,7 @@ contract Task4 with Deployable {
                 newOwner: sender(),
                 responseDestination: sender(),
                 customPayload: null,
-                forwardAmount: ctx.readForwardFee(),
+                forwardAmount: 0,
                 forwardPayload: emptyCell().asSlice()
             }.toCell()});
         self.l_nft = null;
