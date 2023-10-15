@@ -61,7 +61,7 @@ contract Task4 with Deployable {
 
   receive(msg: OwnershipAssigned) {
     // Receives nft + time (in a forwardPayload message as uint32)
-    if (self.l_nft != null) {
+    if (self.l_nft == null) {
         self.nft_owner = msg.prevOwner;
         self.lock_until = now() + msg.forwardPayload.loadUint(32);
         self.l_nft = sender();
@@ -74,7 +74,7 @@ contract Task4 with Deployable {
             mode: SendRemainingValue,
             body: OwnershipAssigned{
                 queryId: msg.queryId,
-                prevOwner: sender(),
+                prevOwner: myAddress(),
                 forwardPayload: msg.forwardPayload
             }.toCell()});
     }
