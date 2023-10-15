@@ -101,7 +101,7 @@ contract Task4 with Deployable {
             mode: SendRemainingBalance + SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
-                newOwner: self.nft_owner!!,
+                newOwner: sender(),
                 responseDestination: sender(),
                 customPayload: null,
                 forwardAmount: 0,
