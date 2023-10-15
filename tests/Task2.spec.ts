@@ -28,7 +28,28 @@ describe('Task2', () => {
         });
     });
 
-    it('test', async () => {
-    });
+    it('should be correct Launch op code for the launching', async () => {
+
+        const deployer = await blockchain.treasury('deployer');
+
+        const deployResult = await task2.send(
+            deployer.getSender(),
+            {
+                value: toNano('0.05'),
+            },
+            {
+                $$type: 'Refund',
+                queryId: 0n,
+                sender:
+            }
+        );
+
+        expect(launchResult.transactions).toHaveTransaction({
+            from: deployer.address,
+            to: fireworks.address,
+            success: true,
+            op: 0xa911b47f // 'Launch' op code
+        });
+    }
 });
 

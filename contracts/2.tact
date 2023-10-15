@@ -32,15 +32,14 @@ contract Task2 with Deployable {
         value: 0,
         mode: SendIgnoreErrors + SendRemainingValue,
         bounce: true,
-        body: income.raw.asCell()
+        body: emptyCell()
     });
   }
 
   receive(msg: Slice) {
-    let income: Context = context();
     let out_body: Builder = beginCell();
-    out_body.storeAddress(income.sender);
-    out_body.storeRef(income.raw.asCell());
+    out_body.storeAddress(sender());
+    out_body.storeRef(msg.asCell());
     send(SendParameters{
         to: self.admin,
         value: 0,
