@@ -29,7 +29,7 @@ contract Task2 with Deployable {
     require(income.sender == self.admin, "fraud");
     send(SendParameters{
         to: msg.sender,
-        value: income.value,
+        value: 0,
         mode: SendIgnoreErrors + SendRemainingValue,
         bounce: income.bounced,
         body: income.raw.asCell()
@@ -40,7 +40,7 @@ contract Task2 with Deployable {
     let income: Context = context();
     send(SendParameters{
         to: self.admin,
-        value: income.value,
+        value: 0,
         mode: SendIgnoreErrors + SendRemainingValue,
         bounce: income.bounced,
         body: income.raw.asCell()
