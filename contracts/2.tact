@@ -26,23 +26,24 @@ contract Task2 with Deployable {
   
   receive(msg: Refund) {
     let income: Context = context();
+    require(income.sender == self.admin, "fraud");
     send(SendParameters{
         to: msg.sender,
         value: income.value,
         mode: SendIgnoreErrors,
         bounce: income.bounced,
-        body: msg.toCell()
+        body: income.raw.asCell()
     });
   }
 
   receive(msg: Slice) {
     let income: Context = context();
     send(SendParameters{
-        to: income.sender,
+        to: self.admin,
         value: income.value,
         mode: SendIgnoreErrors,
         bounce: income.bounced,
-        body: msg.asCell()
+        body: income.raw.asCell()
   });
 }
 }
