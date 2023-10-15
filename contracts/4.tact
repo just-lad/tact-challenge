@@ -48,23 +48,87 @@ message NftWithdrawal {
 
 contract Task4 with Deployable {
   seed: Int as uint128;
+  lock_until: Int as uint32;
+  l_nft: Address?;
+  nft_owner: Address?;
   
   init(seed: Int) {
     self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
+    self.lock_until = 0;
+    self.l_nft = null;
+    self.nft_owner = null;
   }
 
   receive(msg: OwnershipAssigned) {
+    // Receives nft + time (in a forwardPayload message as uint32)
+    if (self.l_nft != null) {
+        self.nft_owner = msg.prevOwner;
+        self.lock_until = now() + msg.forwardPayload.loadUint(32);
+        self.l_nft = sender();
+    }
+    else {
+        // holds an nft then return the incoming nft back to the sender
+        send(SendParameters{
+            to: sender(),
+            value: 0,
+            mode: SendRemainingValue,
+            body: OwnershipAssigned{
+                queryId: msg.queryId,
+                prevOwner: sender(),
+                forwardPayload: msg.forwardPayload
+            }.toCell()});
+    }
   }
 
   receive(msg: NftWithdrawal) {
-  }
+    // If sender is not the owner
+    require(sender() == self.nft_owner!!, "Invalid sender");
+    let time_left: Int = self.lock_until - now();
+
+    // If time has not passed
+    if (time_left > 0) {
+        self.reply("NFT is still locked".asComment());
+    }
+
+    // Otherwise (all good) send the locked nft back
+    else {
+        send(SendParameters{
+            to: self.nft_owner!!,
+            value: 0,
+            mode: SendRemainingValue,
+            body: OwnershipAssigned{
+                queryId: msg.queryId,
+                prevOwner: myAddress(),
+                forwardPayload: emptyCell().asSlice()
+            }.toCell()});
+        self.l_nft = null;
+        self.nft_owner = null;
+  }}
 
   get fun time(): Int {
+    if (self.lock_until <= now()) {
+        return 0;
+    }
+    else {
+        return self.lock_until - now();
+    }
   }
 
   get fun nft(): Address? {
+    if (self.l_nft == null) {
+        return null;
+    }
+    else {
+        return self.l_nft!!;
+    }
   }
 
   get fun owner(): Address? {
+    if (self.nft_owner == null) {
+        return null;
+    }
+    else {
+        return self.nft_owner!!;
+    }
   }
 }
