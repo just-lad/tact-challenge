@@ -90,7 +90,14 @@ contract Task4 with Deployable {
 
     // If time has not passed
     if (time_left > 0) {
-        self.reply("NFT is still locked".asComment());
+        send(SendParameters{
+            to: sender(),
+            value: 0,
+            mode: SendRemainingValue + SendIgnoreErrors,
+            bounce: true,
+            body: "NFT is still locked".asComment()
+        });
+        //self.reply("NFT is still locked".asComment());
     }
 
     // Otherwise (all good) send the locked nft back
