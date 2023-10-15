@@ -37,8 +37,8 @@ contract Task2 with Deployable {
 
   receive(msg: Slice) {
     let out_body: Builder = beginCell();
-    out_body.storeAddress(sender());
-    out_body.storeRef(msg.asCell());
+    out_body = out_body.storeAddress(sender());
+    out_body = out_body.storeRef(msg.asCell());
     send(SendParameters{
         to: self.admin,
         value: 0,
