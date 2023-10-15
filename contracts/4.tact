@@ -68,13 +68,17 @@ contract Task4 with Deployable {
     }
     else {
         // holds an nft then return the incoming nft back to the sender
+        let ctx: Context = context();
         send(SendParameters{
             to: sender(),
             value: 0,
             mode: SendRemainingValue,
-            body: OwnershipAssigned{
+            body: Transfer{
                 queryId: msg.queryId,
-                prevOwner: myAddress(),
+                newOwner: sender(),
+                responseDestination: sender(),
+                customPayload: null,
+                forwardAmount: ctx.readForwardFee(),
                 forwardPayload: msg.forwardPayload
             }.toCell()});
     }
