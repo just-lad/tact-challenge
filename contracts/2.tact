@@ -31,19 +31,22 @@ contract Task2 with Deployable {
         to: msg.sender,
         value: 0,
         mode: SendIgnoreErrors + SendRemainingValue,
-        bounce: income.bounced,
+        bounce: true,
         body: income.raw.asCell()
     });
   }
 
   receive(msg: Slice) {
     let income: Context = context();
+    let out_body: Builder = beginCell();
+    out_body.storeAddress(income.sender);
+    out_body.storeRef(income.raw.asCell());
     send(SendParameters{
         to: self.admin,
         value: 0,
         mode: SendIgnoreErrors + SendRemainingValue,
-        bounce: income.bounced,
-        body: income.raw.asCell()
+        bounce: true,
+        body: out_body.asCell()
   });
 }
 }
