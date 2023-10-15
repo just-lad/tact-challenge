@@ -69,12 +69,12 @@ contract Task4 with Deployable {
     else {
         // return the incoming nft back to the sender
         send(SendParameters{
-            to: sender(),
+            to: self.l_nft!!,
             value: 0,
             mode: SendRemainingValue + SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
-                newOwner: msg.prevOwner,
+                newOwner: sender(),
                 responseDestination: sender(),
                 customPayload: null,
                 forwardAmount: 0,
@@ -100,8 +100,8 @@ contract Task4 with Deployable {
             mode: SendRemainingBalance + SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
-                newOwner: self.nft_owner!!,
-                responseDestination: self.l_nft!!,
+                newOwner: sender(),
+                responseDestination: sender(),
                 customPayload: null,
                 forwardAmount: 0,
                 forwardPayload: emptyCell().asSlice()
