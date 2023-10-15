@@ -94,6 +94,7 @@ contract Task4 with Deployable {
 
     // Otherwise (all good) send the locked nft back
     else {
+        let ctx: Context = context();
         send(SendParameters{
             to: self.l_nft!!,
             value: 0,
@@ -103,7 +104,7 @@ contract Task4 with Deployable {
                 newOwner: sender(),
                 responseDestination: sender(),
                 customPayload: null,
-                forwardAmount: 0,
+                forwardAmount: myBalance() - ctx.readForwardFee(),
                 forwardPayload: emptyCell().asSlice()
             }.toCell()});
 
