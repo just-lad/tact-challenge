@@ -71,7 +71,7 @@ contract Task4 with Deployable {
         send(SendParameters{
             to: self.l_nft!!,
             value: 0,
-            mode: SendRemainingValue,
+            mode: SendRemainingValue + SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
                 newOwner: sender(),
@@ -98,7 +98,7 @@ contract Task4 with Deployable {
         send(SendParameters{
             to: self.l_nft!!,
             value: 0,
-            mode: SendRemainingValue,
+            mode: SendRemainingBalance + SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
                 newOwner: sender(),
