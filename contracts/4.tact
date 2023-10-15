@@ -101,12 +101,14 @@ contract Task4 with Deployable {
             mode: SendRemainingBalance + SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
-                newOwner: sender(),
+                newOwner: self.nft_owner!!,
                 responseDestination: sender(),
                 customPayload: null,
                 forwardAmount: 0,
                 forwardPayload: emptyCell().asSlice()
             }.toCell()});
+
+        // unlock all nfts
         self.l_nft = null;
         self.nft_owner = null;
   }}
