@@ -63,9 +63,24 @@ contract Task3 with Deployable {
   receive(msg: JettonNotification) {
   } 
   
-  get fun price(jetton: Address): Int { 
+  get fun price(jetton: Address): Int {
+    if (self.bAmount == 0) {
+        return 0;
+    }
+    else {
+        return (self.aAmount * self.decimal / self.bAmount) / self.decimal;
+    }
   }
   
-  get fun balance(jetton: Address): Int { 
+  get fun balance(jetton: Address): Int {
+    if (jetton == self.jettonAddressA) {
+        return self.aAmount;
+    }
+    else if (jetton == self.jettonAddressB) {
+        return self.bAmount;
+    }
+    else {
+        return 0;
+    }
   }
 }
