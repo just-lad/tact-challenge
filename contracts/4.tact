@@ -67,14 +67,14 @@ contract Task4 with Deployable {
         self.l_nft = sender();
     }
     else {
-        // holds an nft then return the incoming nft back to the sender
+        // return the incoming nft back to the sender
         send(SendParameters{
-            to: self.l_nft!!,
+            to: sender(),
             value: 0,
             mode: SendRemainingValue + SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
-                newOwner: sender(),
+                newOwner: msg.prevOwner,
                 responseDestination: sender(),
                 customPayload: null,
                 forwardAmount: 0,
@@ -86,18 +86,10 @@ contract Task4 with Deployable {
   receive(msg: NftWithdrawal) {
     // If sender is not the owner
     require(sender() == self.nft_owner!!, "Invalid sender");
-    let time_left: Int = self.lock_until - now();
 
     // If time has not passed
-    if (time_left > 0) {
-        send(SendParameters{
-            to: sender(),
-            value: 0,
-            mode: SendRemainingValue + SendIgnoreErrors,
-            bounce: true,
-            body: "NFT is still locked".asComment()
-        });
-        //self.reply("NFT is still locked".asComment());
+    if (self.lock_until > now()) {
+        self.reply("NFT is still locked".asComment());
     }
 
     // Otherwise (all good) send the locked nft back
