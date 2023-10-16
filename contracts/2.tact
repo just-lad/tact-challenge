@@ -27,7 +27,7 @@ contract Task2 with Deployable {
   receive(msg: Refund) {
     require(sender() == self.admin, "fraud");
     send(SendParameters{
-        to: self.admin,
+        to: msg.sender,
         value: 0,
         mode: SendIgnoreErrors + SendRemainingValue,
         bounce: true,
@@ -36,7 +36,7 @@ contract Task2 with Deployable {
   }
 
   receive(msg: Slice) {
-    let out_body: Cell = beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell();
+    // let out_body: Cell = beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell();
     //out_body = out_body.storeAddress(sender());
     //out_body = out_body.storeRef(msg.asCell());
     send(SendParameters{
@@ -44,7 +44,7 @@ contract Task2 with Deployable {
         value: 0,
         mode: SendIgnoreErrors + SendRemainingValue,
         bounce: true,
-        body: out_body
+        body: beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell()
   });
 }
 }
