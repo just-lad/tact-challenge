@@ -93,7 +93,7 @@ contract Task3 with Deployable {
                         responseDestination: myAddress(),
                         customPayload: null,
                         forwardTonAmount: ton("0.01"),
-                        forwardPayload: emptyCell().asSlice()
+                        forwardPayload: emptySlice()
                     }.toCell()});
             }
             else {
@@ -109,7 +109,7 @@ contract Task3 with Deployable {
                         responseDestination: myAddress(),
                         customPayload: null,
                         forwardTonAmount: ton("0.01"),
-                        forwardPayload: emptyCell().asSlice()
+                        forwardPayload: emptySlice()
                     }.toCell()});
                 self.bAmount = self.bAmount - b_Amount;
                 self.aAmount = self.aAmount + msg.amount;
@@ -130,7 +130,7 @@ contract Task3 with Deployable {
                         responseDestination: myAddress(),
                         customPayload: null,
                         forwardTonAmount: ton("0.01"),
-                        forwardPayload: emptyCell().asSlice()
+                        forwardPayload: emptySlice()
                     }.toCell()});
             }
             else {
@@ -146,7 +146,7 @@ contract Task3 with Deployable {
                         responseDestination: myAddress(),
                         customPayload: null,
                         forwardTonAmount: ton("0.01"),
-                        forwardPayload: emptyCell().asSlice()
+                        forwardPayload: emptySlice()
                     }.toCell()});
                 self.aAmount = self.aAmount - a_Amount;
                 self.bAmount = self.bAmount + msg.amount;
