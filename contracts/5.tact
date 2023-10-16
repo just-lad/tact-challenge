@@ -91,14 +91,14 @@ contract Task5 with Deployable {
     else if ((ctx.value < (2100000000)) && (ctx.value > ctx.readForwardFee())) {
         send(SendParameters{
             to: sender(),
-            value: 0,
+            value: ctx.value - ctx.readForwardFee(),
             mode: SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
                 newOwner: msg.prevOwner,
                 responseDestination: msg.prevOwner,
                 customPayload: null,
-                forwardAmount: ctx.value - ctx.readForwardFee(),
+                forwardAmount: 0,
                 forwardPayload: emptySlice()
         }.toCell()});
     }
@@ -126,7 +126,7 @@ contract Task5 with Deployable {
         // some incoming TONs will be consumed for gas and the remainings of the incoming TONs should be refunded to the sender
         send(SendParameters{
             to: nft_address,
-            value: ctx.value - 2000000000,
+            value: ctx.value - 2000000000,  // correct
             mode: SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
