@@ -68,7 +68,7 @@ contract Task5 with Deployable {
   seed: Int as uint128;
   owner: Address;
   id_nfts: map<Int as uint16, Address>;
-  nfts_number: Int as uint16;
+  nfts_number: Int;
   
   init(seed: Int, owner: Address) {
     self.owner = owner;
