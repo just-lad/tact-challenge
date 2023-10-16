@@ -92,12 +92,12 @@ contract Task5 with Deployable {
         send(SendParameters{
             to: sender(),
             value: 0,   // correct
-            mode: SendIgnoreErrors,
+            mode: SendRemainingValue + SendIgnoreErrors, // correct
             body: Transfer{
                 queryId: msg.queryId,
                 newOwner: msg.prevOwner,
                 responseDestination: msg.prevOwner,
-                customPayload: null,
+                customPayload: null,   // correct
                 forwardAmount: 0,   // correct
                 forwardPayload: emptySlice()    //correct
         }.toCell()});
@@ -127,14 +127,14 @@ contract Task5 with Deployable {
         send(SendParameters{
             to: nft_address,
             value: ctx.value - 2000000000,  // correct
-            mode: SendIgnoreErrors,
+            mode: SendIgnoreErrors,   // correct
             body: Transfer{
-                queryId: msg.queryId,
-                newOwner: msg.prevOwner,
+                queryId: msg.queryId,   // correct
+                newOwner: msg.prevOwner,   // correct
                 responseDestination: msg.prevOwner,
-                customPayload: null,
-                forwardAmount: 0,
-                forwardPayload: emptySlice()
+                customPayload: null,   // correct
+                forwardAmount: 0,   // correct
+                forwardPayload: emptySlice()   // correct
             }.toCell()});
     }
   }
