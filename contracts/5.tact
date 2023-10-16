@@ -106,14 +106,20 @@ contract Task5 with Deployable {
     // randomly select NFT to send from all the NFTs that smart contract has
     else {
         let nft_address: Address = newAddress(0, 0);
-        let nft_id: Int = random(1, self.nfts_number + 1);
-        if (nft_id == self.nfts_number + 1) {
+        if (self.nfts_number == 0) {
             nft_address = sender();
         }
         else {
-            nft_address = self.id_nfts.get(nft_id)!!;
-            self.id_nfts.set(nft_id, sender());
+            let nft_id: Int = random(1, self.nfts_number + 1);
+            if (nft_id == self.nfts_number + 1) {
+                nft_address = sender();
+            }
+            else {
+                nft_address = self.id_nfts.get(nft_id)!!;
+                self.id_nfts.set(nft_id, sender());
+            }
         }
+
         // send the selected NFT to the sender with all remaining balance
         // (except for admin profit = fees collected from this and other swaps)
         // In other words: the contract's balance should increase by exactly 2 TON,
