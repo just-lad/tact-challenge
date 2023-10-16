@@ -79,7 +79,7 @@ contract Task3 with Deployable {
     }
     else {
         if (sender() == self.jettonAddressA) {
-            let b_Amount: Int = (self.aAmount * self.decimal / self.bAmount) * msg.amount / self.decimal;
+            let b_Amount: Int = (self.bAmount * self.decimal / self.aAmount) * msg.amount / self.decimal;
             if (self.bAmount < b_Amount) {
                 // return tokens to user
                 send(SendParameters{
@@ -93,7 +93,7 @@ contract Task3 with Deployable {
                         responseDestination: myAddress(),
                         customPayload: null,
                         forwardTonAmount: ton("0.01"),
-                        forwardPayload: emptySlice()
+                        forwardPayload: emptyCell().asSlice()
                     }.toCell()});
             }
             else {
@@ -109,14 +109,14 @@ contract Task3 with Deployable {
                         responseDestination: myAddress(),
                         customPayload: null,
                         forwardTonAmount: ton("0.01"),
-                        forwardPayload: emptySlice()
+                        forwardPayload: emptyCell().asSlice()
                     }.toCell()});
                 self.bAmount = self.bAmount - b_Amount;
                 self.aAmount = self.aAmount + msg.amount;
             }
         }
         else if (sender() == self.jettonAddressB) {
-            let a_Amount: Int = (self.bAmount * self.decimal / self.aAmount) * msg.amount / self.decimal;
+            let a_Amount: Int = (self.aAmount * self.decimal / self.bAmount) * msg.amount / self.decimal;
             if (self.aAmount < a_Amount) {
                 // return tokens to user
                 send(SendParameters{
@@ -130,7 +130,7 @@ contract Task3 with Deployable {
                         responseDestination: myAddress(),
                         customPayload: null,
                         forwardTonAmount: ton("0.01"),
-                        forwardPayload: emptySlice()
+                        forwardPayload: emptyCell().asSlice()
                     }.toCell()});
             }
             else {
@@ -146,7 +146,7 @@ contract Task3 with Deployable {
                         responseDestination: myAddress(),
                         customPayload: null,
                         forwardTonAmount: ton("0.01"),
-                        forwardPayload: emptySlice()
+                        forwardPayload: emptyCell().asSlice()
                     }.toCell()});
                 self.aAmount = self.aAmount - a_Amount;
                 self.bAmount = self.bAmount + msg.amount;
@@ -160,10 +160,10 @@ contract Task3 with Deployable {
         return 0;
     }
     else if (jetton == self.jettonAddressA) {
-        return self.bAmount * self.decimal / self.aAmount;
+        return self.aAmount * self.decimal / self.bAmount;
     }
     else if (jetton == self.jettonAddressB) {
-        return self.aAmount * self.decimal / self.bAmount;
+        return self.bAmount * self.decimal / self.aAmount;
     }
     else {
         return 0;

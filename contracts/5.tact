@@ -78,31 +78,45 @@ contract Task5 with Deployable {
   }
 
   receive(msg: OwnershipAssigned) {
-  // if prevOwner is admin - do not swap but append nft to nft_map
+  // if prevOwner is the owner's (admin) address, then add NFT to the collection
     if (msg.prevOwner == self.owner) {
         self.nfts_number = self.nfts_number + 1;
         self.id_nfts.set(self.nfts_number, sender());
     }
 
-  // else swap nft and send back to user
+  // if value of TON attached is less then 2.1 TON then stop execution and return NFT back,
+  // but only in case that TON attached is enough to process refund without losing TONs on the SC's balance
+  let ctx: Context = context();
+  else if ((ctx.value < 2100000000) && (ctx.value > readForwardFee())) {
+    // return nft
+  }
+
+  // randomly select NFT to send from all the NFTs that smart contract has
     else {
-        let nft_id: Int = random(1, self.nfts_number);
-        let nft_address: Address? = self.id_nfts.get(nft_id);
-        if (nft_address != null) {
-            send(SendParameters{
-                to: nft_address!!,
-                value: 0,
-                mode: SendRemainingValue + SendIgnoreErrors,
-                body: Transfer{
-                    queryId: msg.queryId,
-                    newOwner: msg.prevOwner,
-                    responseDestination: msg.prevOwner,
-                    customPayload: null,
-                    forwardAmount: 0,
-                    forwardPayload: emptyCell().asSlice()
-                }.toCell()});
-            self.id_nfts.set(nft_id, sender());
+        let nft_address: Address = newAddress(0, 0);
+        let nft_id: Int = random(1, self.nfts_number + 1);
+        if (nft_id == self.nfts_number + 1) {
+            nft_address = sender();
         }
+        else {
+            nft_address = self.id_nfts.get(nft_id)!!;
+        }
+        // send the selected NFT to the sender with all remaining balance
+        // (except for admin profit = fees collected from this and other swaps)
+        // In other words: the contract's balance should increase by exactly 2 TON,
+        // some incoming TONs will be consumed for gas and the remainings of the incoming TONs should be refunded to the sender
+        send(SendParameters{
+            to: nft_address,
+            value: 0,
+            mode: SendRemainingValue + SendIgnoreErrors,
+            body: Transfer{
+                queryId: msg.queryId,
+                newOwner: msg.prevOwner,
+                responseDestination: msg.prevOwner,
+                customPayload: null,
+                forwardAmount: 0,
+                forwardPayload: emptyCell().asSlice()
+            }.toCell()});
     }
   }
 
