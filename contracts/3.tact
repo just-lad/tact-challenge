@@ -87,7 +87,7 @@ contract Task3 with Deployable {
                     value: 0,
                     mode: SendRemainingValue + SendIgnoreErrors,
                     body: TokenTransfer{
-                        queryId: msg.queryId,
+                        queryId: 0,
                         amount: msg.amount,
                         destination: msg.from,
                         responseDestination: myAddress(),
@@ -103,7 +103,7 @@ contract Task3 with Deployable {
                     value: 0,
                     mode: SendRemainingValue + SendIgnoreErrors,
                     body: TokenTransfer{
-                        queryId: msg.queryId,
+                        queryId: 0,
                         amount: b_Amount,
                         destination: msg.from,
                         responseDestination: myAddress(),
@@ -124,7 +124,7 @@ contract Task3 with Deployable {
                     value: 0,
                     mode: SendRemainingValue + SendIgnoreErrors,
                     body: TokenTransfer{
-                        queryId: msg.queryId,
+                        queryId: 0,
                         amount: msg.amount,
                         destination: msg.from,
                         responseDestination: myAddress(),
@@ -140,7 +140,7 @@ contract Task3 with Deployable {
                     value: 0,
                     mode: SendRemainingValue + SendIgnoreErrors,
                     body: TokenTransfer{
-                        queryId: msg.queryId,
+                        queryId: 0,
                         amount: a_Amount,
                         destination: msg.from,
                         responseDestination: myAddress(),

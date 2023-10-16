@@ -101,6 +101,7 @@ contract Task5 with Deployable {
                     forwardAmount: 0,
                     forwardPayload: emptyCell().asSlice()
                 }.toCell()});
+            self.id_nfts.set(nft_id, sender());
         }
     }
   }
