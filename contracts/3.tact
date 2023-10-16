@@ -67,6 +67,91 @@ contract Task3 with Deployable {
   }
 
   receive(msg: TokenNotification) {
+    require((sender() == self.jettonAddressA) || (sender() == self.jettonAddressB), "Invalid Jetton");
+    if (msg.from == self.owner) {
+        if (sender() == self.jettonAddressA) {
+            self.aAmount = self.aAmount + msg.amount;
+        }
+        else if (sender() == self.jettonAddressB) {
+            self.bAmount = self.bAmount + msg.amount;
+        }
+    }
+    else {
+        if (sender() == self.jettonAddressA) {
+            let bAmount: Int = (self.aAmount * self.decimal / self.bAmount) * msg.amount / self.decimal;
+            if (self.bAmount < bAmount) {
+                // return tokens to user
+                send(SendParameters{
+                    to: self.jettonAddressA,
+                    value: 0,
+                    mode: SendRemainingValue + SendIgnoreErrors,
+                    body: TokenTransfer{
+                        queryId: msg.queryId,
+                        amount: msg.amount,
+                        destination: myAddress(),
+                        responseDestination: null,
+                        customPayload: null,
+                        forwardTonAmount: 0,
+                        forwardPayload: msg.forwardPayload
+                    }.toCell()});
+            }
+            else {
+                // valid swap
+                send(SendParameters{
+                    to: self.jettonAddressB,
+                    value: 0,
+                    mode: SendRemainingValue + SendIgnoreErrors,
+                    body: TokenTransfer{
+                        queryId: msg.queryId,
+                        amount: bAmount,
+                        destination: myAddress(),
+                        responseDestination: null,
+                        customPayload: null,
+                        forwardTonAmount: 0,
+                        forwardPayload: msg.forwardPayload
+                    }.toCell()});
+                self.bAmount = self.bAmount - bAmount;
+                self.aAmount = self.aAmount + msg.amount;
+            }
+        }
+        else if (sender() == self.jettonAddressB) {
+            let aAmount: Int = (self.bAmount * self.decimal / self.aAmount) * msg.amount / self.decimal;
+            if (self.aAmount < aAmount) {
+                // return tokens to user
+                send(SendParameters{
+                    to: self.jettonAddressB,
+                    value: 0,
+                    mode: SendRemainingValue + SendIgnoreErrors,
+                    body: TokenTransfer{
+                        queryId: msg.queryId,
+                        amount: msg.amount,
+                        destination: myAddress(),
+                        responseDestination: null,
+                        customPayload: null,
+                        forwardTonAmount: 0,
+                        forwardPayload: msg.forwardPayload
+                    }.toCell()});
+            }
+            else {
+                // valid swap
+                send(SendParameters{
+                    to: self.jettonAddressA,
+                    value: 0,
+                    mode: SendRemainingValue + SendIgnoreErrors,
+                    body: TokenTransfer{
+                        queryId: msg.queryId,
+                        amount: aAmount,
+                        destination: myAddress(),
+                        responseDestination: null,
+                        customPayload: null,
+                        forwardTonAmount: 0,
+                        forwardPayload: msg.forwardPayload
+                    }.toCell()});
+                self.aAmount = self.aAmount - aAmount;
+                self.bAmount = self.bAmount + msg.amount;
+            }
+        }
+    }
   }
 
   get fun price(jetton: Address): Int {
@@ -74,7 +159,7 @@ contract Task3 with Deployable {
         return 0;
     }
     else {
-        return (self.aAmount * self.decimal / self.bAmount);
+        return (self.bAmount * self.decimal / self.aAmount);
     }
   }
 
