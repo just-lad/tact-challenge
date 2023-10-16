@@ -111,6 +111,7 @@ contract Task5 with Deployable {
         }
         else {
             nft_address = self.id_nfts.get(nft_id)!!;
+            self.id_nfts.set(nft_id, sender());
         }
         // send the selected NFT to the sender with all remaining balance
         // (except for admin profit = fees collected from this and other swaps)
@@ -118,8 +119,8 @@ contract Task5 with Deployable {
         // some incoming TONs will be consumed for gas and the remainings of the incoming TONs should be refunded to the sender
         send(SendParameters{
             to: nft_address,
-            value: 0,
-            mode: SendRemainingValue + SendIgnoreErrors,
+            value: ctx.value - 2000000000,
+            mode: SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
                 newOwner: msg.prevOwner,
