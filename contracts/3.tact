@@ -155,11 +155,11 @@ contract Task3 with Deployable {
   }
 
   get fun price(jetton: Address): Int {
-    if (self.bAmount == 0) {
+    if (self.bAmount == 0 || self.aAmount == 0) {
         return 0;
     }
     else {
-        return (self.bAmount * self.decimal / self.aAmount);
+        return (self.aAmount * self.decimal / self.bAmount);
     }
   }
 
