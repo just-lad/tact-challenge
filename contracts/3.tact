@@ -88,8 +88,8 @@ contract Task3 with Deployable {
                     body: TokenTransfer{
                         queryId: msg.queryId,
                         amount: msg.amount,
-                        destination: myAddress(),
-                        responseDestination: null,
+                        destination: msg.from,
+                        responseDestination: myAddress(),
                         customPayload: null,
                         forwardTonAmount: 0,
                         forwardPayload: msg.forwardPayload
@@ -104,8 +104,8 @@ contract Task3 with Deployable {
                     body: TokenTransfer{
                         queryId: msg.queryId,
                         amount: bAmount,
-                        destination: myAddress(),
-                        responseDestination: null,
+                        destination: msg.from,
+                        responseDestination: myAddress(),
                         customPayload: null,
                         forwardTonAmount: 0,
                         forwardPayload: msg.forwardPayload
@@ -125,8 +125,8 @@ contract Task3 with Deployable {
                     body: TokenTransfer{
                         queryId: msg.queryId,
                         amount: msg.amount,
-                        destination: myAddress(),
-                        responseDestination: null,
+                        destination: msg.from,
+                        responseDestination: myAddress(),
                         customPayload: null,
                         forwardTonAmount: 0,
                         forwardPayload: msg.forwardPayload
@@ -141,8 +141,8 @@ contract Task3 with Deployable {
                     body: TokenTransfer{
                         queryId: msg.queryId,
                         amount: aAmount,
-                        destination: myAddress(),
-                        responseDestination: null,
+                        destination: msg.from,
+                        responseDestination: myAddress(),
                         customPayload: null,
                         forwardTonAmount: 0,
                         forwardPayload: msg.forwardPayload
@@ -159,7 +159,7 @@ contract Task3 with Deployable {
         return 0;
     }
     else {
-        return (self.aAmount * self.decimal / self.bAmount);
+        return (self.bAmount * self.decimal / self.aAmount);
     }
   }
 
