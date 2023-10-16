@@ -67,13 +67,42 @@ message(0x5fcc3d14) Transfer {
 contract Task5 with Deployable {
   seed: Int as uint128;
   owner: Address;
+  id_nfts: map<Int as uint16, Address>;
+  nfts_number: Int as uint16;
   
   init(seed: Int, owner: Address) {
     self.owner = owner;
     self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
+    self.nfts_number = 0;
+    self.id_nfts = emptyMap();
   }
 
   receive(msg: OwnershipAssigned) {
+  // if prevOwner is admin - do not swap but append nft to nft_map
+    if (msg.prevOwner == self.owner) {
+        self.nfts_number = self.nfts_number + 1;
+        self.id_nfts.set(self.nfts_number, sender());
+    }
+
+  // else swap nft and send back to user
+    else {
+        let nft_id: Int = random(1, self.nfts_number);
+        let nft_address: Address? = self.id_nfts.get(nft_id);
+        if (nft_address != null) {
+            send(SendParameters{
+                to: nft_address!!,
+                value: 0,
+                mode: SendRemainingValue + SendIgnoreErrors,
+                body: Transfer{
+                    queryId: msg.queryId,
+                    newOwner: msg.prevOwner,
+                    responseDestination: msg.prevOwner,
+                    customPayload: null,
+                    forwardAmount: 0,
+                    forwardPayload: emptyCell().asSlice()
+                }.toCell()});
+        }
+    }
   }
 
   receive(msg: AdminWithdrawalProfit) {
@@ -91,9 +120,10 @@ contract Task5 with Deployable {
   }
 
   get fun profit(): Int {
-    return myBalance()
+    return myBalance() - 100000000;
   }
   
-  get fun nfts(): map<Int as uint16, Address> { 
+  get fun nfts(): map<Int as uint16, Address> {
+    return self.id_nfts;
   }
 }
