@@ -92,13 +92,13 @@ contract Task5 with Deployable {
         send(SendParameters{
             to: sender(),
             value: 0,
-            mode: SendIgnoreErrors,
+            mode: SendRemainingValue + SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
                 newOwner: msg.prevOwner,
                 responseDestination: msg.prevOwner,
                 customPayload: null,
-                forwardAmount: ctx.value - ctx.readForwardFee(),
+                forwardAmount: 0,
                 forwardPayload: emptyCell().asSlice()
         }.toCell()});
     }
