@@ -73,7 +73,7 @@ contract Task5 with Deployable {
   init(seed: Int, owner: Address) {
     self.owner = owner;
     self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
-    self.nfts_number = 0;
+    self.nfts_number = -1;
     self.id_nfts = emptyMap();
   }
 
@@ -106,7 +106,7 @@ contract Task5 with Deployable {
     // randomly select NFT to send from all the NFTs that smart contract has
     else {
         let nft_address: Address = newAddress(0, 0);
-        if (self.nfts_number == 0) {
+        if (self.nfts_number == -1) {
             nft_address = sender();
         }
         else {
@@ -157,40 +157,42 @@ contract Task5 with Deployable {
 
   receive(msg: AdminWithdrawalAllNFTs) {
     let ctx: Context = context();
-        // SC should check that incoming tx TON value is enough for NFT withdrawal.
-        // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
-        require(ctx.value >= (1000000000 + 80000000*self.nfts_number), "Insufficent funds");
+    // SC should check that incoming tx TON value is enough for NFT withdrawal.
+    // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
+    require(ctx.value >= (1000000000 + 80000000*self.nfts_number), "Insufficent funds");
 
-        // SC should check that sender is the admin, throw "Invalid sender" otherwise
-        require(sender() == self.owner, "Invalid sender");
+    // SC should check that sender is the admin, throw "Invalid sender" otherwise
+    require(sender() == self.owner, "Invalid sender");
 
-        // If all checks pass, SC should send NFTs one by one to the admin
-        // SC should be able to withdraw all NFTs by a single message from admin
-        let index: Int = 1;
-        while (index <= self.nfts_number) {
-            send(SendParameters{
-                to: self.id_nfts.get(index)!!,
-                value: 0,
-                mode: SendIgnoreErrors,
-                body: Transfer{
-                    queryId: msg.queryId,
-                    newOwner: self.owner,
-                    responseDestination: self.owner,
-                    customPayload: null,
-                    forwardAmount: 0,
-                    forwardPayload: emptyCell().asSlice()
-            }.toCell()});
-            index = index + 1;
-        }
-        self.id_nfts = emptyMap();
-        self.nfts_number = 0;
+    // If all checks pass, SC should send NFTs one by one to the admin
+    // SC should be able to withdraw all NFTs by a single message from admin
+    let index: Int = 0;
+    while (index <= self.nfts_number) {
+        send(SendParameters{
+            to: self.id_nfts.get(index)!!,
+            value: 0,
+            mode: SendIgnoreErrors,
+            body: Transfer{
+                queryId: msg.queryId,
+                newOwner: self.owner,
+                responseDestination: self.owner,
+                customPayload: null,
+                forwardAmount: 0,
+                forwardPayload: emptySlice()
+        }.toCell()});
+        index = index + 1;
+    }
+    self.id_nfts = emptyMap();
+    self.nfts_number = -1;
   }
 
   get fun profit(): Int {
-    return myBalance() - 100000000;
+    // returns how much collected fees is available to withdraw for the admin (all fees minus 0.1 TON)
+    return (myBalance() - 100000000);
   }
   
   get fun nfts(): map<Int as uint16, Address> {
+    // returns dict of held NFTs with NFT indexes (sequential numbers from 0, 1, 2 ... and up to 'totalNftsHeld-1') as keys and NFT address as values
     return self.id_nfts;
   }
 }
