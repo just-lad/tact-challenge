@@ -37,7 +37,7 @@ import "@stdlib/deploy";
      the order of NFTs in this dictionary doesn't matter
 */
 
-message AdminWithdrawalFees {
+message AdminWithdrawalProfit {
   queryId: Int as uint64;
 }
 
@@ -90,7 +90,8 @@ contract Task5 with Deployable {
   receive(msg: AdminWithdrawalAllNFTs) {
   }
 
-  get fun profit(): Int { 
+  get fun profit(): Int {
+    return myBalance()
   }
   
   get fun nfts(): map<Int as uint16, Address> { 

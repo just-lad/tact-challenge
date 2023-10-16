@@ -69,7 +69,7 @@ contract Task4 with Deployable {
     else {
         // return the incoming nft back to the sender
         send(SendParameters{
-            to: self.l_nft!!,
+            to: sender(),
             value: 0,
             mode: SendRemainingValue + SendIgnoreErrors,
             body: Transfer{
