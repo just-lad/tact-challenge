@@ -78,8 +78,8 @@ contract Task3 with Deployable {
     }
     else {
         if (sender() == self.jettonAddressA) {
-            let bAmount: Int = (self.aAmount * self.decimal / self.bAmount) * msg.amount / self.decimal;
-            if (self.bAmount < bAmount) {
+            let b_Amount: Int = (self.aAmount * self.decimal / self.bAmount) * msg.amount / self.decimal;
+            if (self.bAmount < b_Amount) {
                 // return tokens to user
                 send(SendParameters{
                     to: self.jettonAddressA,
@@ -89,7 +89,7 @@ contract Task3 with Deployable {
                         queryId: msg.queryId,
                         amount: msg.amount,
                         destination: msg.from,
-                        responseDestination: myAddress(),
+                        responseDestination: null,
                         customPayload: null,
                         forwardTonAmount: 0,
                         forwardPayload: msg.forwardPayload
@@ -103,20 +103,20 @@ contract Task3 with Deployable {
                     mode: SendRemainingValue + SendIgnoreErrors,
                     body: TokenTransfer{
                         queryId: msg.queryId,
-                        amount: bAmount,
+                        amount: b_Amount,
                         destination: msg.from,
-                        responseDestination: myAddress(),
+                        responseDestination: null,
                         customPayload: null,
                         forwardTonAmount: 0,
                         forwardPayload: msg.forwardPayload
                     }.toCell()});
-                self.bAmount = self.bAmount - bAmount;
+                self.bAmount = self.bAmount - b_Amount;
                 self.aAmount = self.aAmount + msg.amount;
             }
         }
         else if (sender() == self.jettonAddressB) {
-            let aAmount: Int = (self.bAmount * self.decimal / self.aAmount) * msg.amount / self.decimal;
-            if (self.aAmount < aAmount) {
+            let a_Amount: Int = (self.bAmount * self.decimal / self.aAmount) * msg.amount / self.decimal;
+            if (self.aAmount < a_Amount) {
                 // return tokens to user
                 send(SendParameters{
                     to: self.jettonAddressB,
@@ -126,7 +126,7 @@ contract Task3 with Deployable {
                         queryId: msg.queryId,
                         amount: msg.amount,
                         destination: msg.from,
-                        responseDestination: myAddress(),
+                        responseDestination: null,
                         customPayload: null,
                         forwardTonAmount: 0,
                         forwardPayload: msg.forwardPayload
@@ -140,14 +140,14 @@ contract Task3 with Deployable {
                     mode: SendRemainingValue + SendIgnoreErrors,
                     body: TokenTransfer{
                         queryId: msg.queryId,
-                        amount: aAmount,
+                        amount: a_Amount,
                         destination: msg.from,
-                        responseDestination: myAddress(),
+                        responseDestination: null,
                         customPayload: null,
                         forwardTonAmount: 0,
                         forwardPayload: msg.forwardPayload
                     }.toCell()});
-                self.aAmount = self.aAmount - aAmount;
+                self.aAmount = self.aAmount - a_Amount;
                 self.bAmount = self.bAmount + msg.amount;
             }
         }
@@ -155,14 +155,17 @@ contract Task3 with Deployable {
   }
 
   get fun price(jetton: Address): Int {
-    if (self.bAmount == 0 || self.aAmount == 0) {
+    if ((self.bAmount == 0) || (self.aAmount == 0)) {
         return 0;
     }
     else if (jetton == self.jettonAddressA) {
-        return (self.aAmount * self.decimal / self.bAmount);
+        return self.aAmount * self.decimal / self.bAmount;
     }
     else if (jetton == self.jettonAddressB) {
-        return (self.bAmount * self.decimal / self.aAmount);
+        return self.bAmount * self.decimal / self.aAmount;
+    }
+    else {
+        return 0;
     }
   }
 
