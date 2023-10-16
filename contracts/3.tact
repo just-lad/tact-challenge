@@ -160,10 +160,10 @@ contract Task3 with Deployable {
         return 0;
     }
     else if (jetton == self.jettonAddressA) {
-        return self.aAmount * self.decimal / self.bAmount;
+        return self.bAmount * self.decimal / self.aAmount;
     }
     else if (jetton == self.jettonAddressB) {
-        return self.bAmount * self.decimal / self.aAmount;
+        return self.aAmount * self.decimal / self.bAmount;
     }
     else {
         return 0;

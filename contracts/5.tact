@@ -88,7 +88,18 @@ contract Task5 with Deployable {
   // but only in case that TON attached is enough to process refund without losing TONs on the SC's balance
   let ctx: Context = context();
   else if ((ctx.value < 2100000000) && (ctx.value > readForwardFee())) {
-    // return nft
+    send(SendParameters{
+        to: sender(),
+        value: 0,
+        mode: SendRemainingValue + SendIgnoreErrors,
+        body: Transfer{
+            queryId: msg.queryId,
+            newOwner: msg.prevOwner,
+            responseDestination: msg.prevOwner,
+            customPayload: null,
+            forwardAmount: 0,
+            forwardPayload: emptyCell().asSlice()
+    }.toCell()});
   }
 
   // randomly select NFT to send from all the NFTs that smart contract has
