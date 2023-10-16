@@ -78,29 +78,29 @@ contract Task5 with Deployable {
   }
 
   receive(msg: OwnershipAssigned) {
-  // if prevOwner is the owner's (admin) address, then add NFT to the collection
-    if (msg.prevOwner == self.owner) {
+      let ctx: Context = context();
+      // if prevOwner is the owner's (admin) address, then add NFT to the collection
+      if (msg.prevOwner == self.owner) {
         self.nfts_number = self.nfts_number + 1;
         self.id_nfts.set(self.nfts_number, sender());
-    }
+      }
 
-  // if value of TON attached is less then 2.1 TON then stop execution and return NFT back,
-  // but only in case that TON attached is enough to process refund without losing TONs on the SC's balance
-  let ctx: Context = context();
-  else if ((ctx.value < 2100000000) && (ctx.value > readForwardFee())) {
-    send(SendParameters{
-        to: sender(),
-        value: 0,
-        mode: SendRemainingValue + SendIgnoreErrors,
-        body: Transfer{
-            queryId: msg.queryId,
-            newOwner: msg.prevOwner,
-            responseDestination: msg.prevOwner,
-            customPayload: null,
-            forwardAmount: 0,
-            forwardPayload: emptyCell().asSlice()
-    }.toCell()});
-  }
+      // if value of TON attached is less then 2.1 TON then stop execution and return NFT back,
+      // but only in case that TON attached is enough to process refund without losing TONs on the SC's balance
+      else if ((ctx.value < 2100000000) && (ctx.value > ctx.readForwardFee())) {
+        send(SendParameters{
+            to: sender(),
+            value: 0,
+            mode: SendRemainingValue + SendIgnoreErrors,
+            body: Transfer{
+                queryId: msg.queryId,
+                newOwner: msg.prevOwner,
+                responseDestination: msg.prevOwner,
+                customPayload: null,
+                forwardAmount: 0,
+                forwardPayload: emptyCell().asSlice()
+        }.toCell()});
+      }
 
   // randomly select NFT to send from all the NFTs that smart contract has
     else {
