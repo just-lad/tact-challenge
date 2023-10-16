@@ -69,14 +69,12 @@ contract Task5 with Deployable {
   owner: Address;
   id_nfts: map<Int as uint16, Address>;
   nfts_number: Int as uint16;
-  decimal: Int;
   
   init(seed: Int, owner: Address) {
     self.owner = owner;
     self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
     self.nfts_number = 0;
     self.id_nfts = emptyMap();
-    self.decimal = 1000000000;
   }
 
   receive(msg: OwnershipAssigned) {
@@ -90,7 +88,7 @@ contract Task5 with Deployable {
 
     // if value of TON attached is less then 2.1 TON then stop execution and return NFT back,
     // but only in case that TON attached is enough to process refund without losing TONs on the SC's balance
-    else if ((ctx.value < (2*self.decimal +self.decimal/10)) && (ctx.value > ctx.readForwardFee())) {
+    else if ((ctx.value < (2100000000)) && (ctx.value > ctx.readForwardFee())) {
         send(SendParameters{
             to: sender(),
             value: 0,
@@ -122,7 +120,7 @@ contract Task5 with Deployable {
         // some incoming TONs will be consumed for gas and the remainings of the incoming TONs should be refunded to the sender
         send(SendParameters{
             to: nft_address,
-            value: ctx.value - 2*self.decimal,
+            value: ctx.value - 2000000000,
             mode: SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
@@ -144,7 +142,7 @@ contract Task5 with Deployable {
     // (which are reserved for storage) and the rest should be sent to the admin
     send(SendParameters{
         to: self.owner,
-        value: myBalance() - self.decimal/10,
+        value: myBalance() - 100000000,
         mode: SendIgnoreErrors,
         body: AdminFetchProfit{
             queryId: msg.queryId
@@ -155,7 +153,7 @@ contract Task5 with Deployable {
     let ctx: Context = context();
         // SC should check that incoming tx TON value is enough for NFT withdrawal.
         // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
-        require(ctx.value >= (self.decimal + self.decimal*self.nfts_number*0.08), "Insufficent funds");
+        require(ctx.value >= (1000000000 + 80000000*self.nfts_number), "Insufficent funds");
 
         // SC should check that sender is the admin, throw "Invalid sender" otherwise
         require(sender() == self.owner, "Invalid sender");
