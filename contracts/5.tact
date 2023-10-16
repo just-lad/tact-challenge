@@ -91,15 +91,15 @@ contract Task5 with Deployable {
     else if ((ctx.value < (2100000000)) && (ctx.value > ctx.readForwardFee())) {
         send(SendParameters{
             to: sender(),
-            value: ctx.value - ctx.readForwardFee(),
+            value: 0,   // correct
             mode: SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
                 newOwner: msg.prevOwner,
                 responseDestination: msg.prevOwner,
                 customPayload: null,
-                forwardAmount: 0,
-                forwardPayload: emptySlice()
+                forwardAmount: 0,   // correct
+                forwardPayload: emptySlice()    //correct
         }.toCell()});
     }
 
