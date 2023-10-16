@@ -115,7 +115,7 @@ contract Task3 with Deployable {
                 self.aAmount = self.aAmount + msg.amount;
             }
         }
-        else if (sender() == self.jettonAddressB) {
+        else {
             let a_Amount: Int = (self.aAmount * self.decimal / self.bAmount) * msg.amount / self.decimal;
             if (self.aAmount < a_Amount) {
                 // return tokens to user
@@ -162,11 +162,8 @@ contract Task3 with Deployable {
     else if (jetton == self.jettonAddressA) {
         return self.bAmount * self.decimal / self.aAmount;
     }
-    else if (jetton == self.jettonAddressB) {
-        return self.aAmount * self.decimal / self.bAmount;
-    }
     else {
-        return 0;
+        return self.aAmount * self.decimal / self.bAmount;
     }
   }
 
@@ -174,11 +171,8 @@ contract Task3 with Deployable {
     if (jetton == self.jettonAddressA) {
         return self.aAmount;
     }
-    else if (jetton == self.jettonAddressB) {
-        return self.bAmount;
-    }
     else {
-        return 0;
+        return self.bAmount;
     }
   }
 }
