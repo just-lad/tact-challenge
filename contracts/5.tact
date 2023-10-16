@@ -69,25 +69,28 @@ contract Task5 with Deployable {
   owner: Address;
   id_nfts: map<Int as uint16, Address>;
   nfts_number: Int as uint16;
+  decimal: Int;
   
   init(seed: Int, owner: Address) {
     self.owner = owner;
     self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
     self.nfts_number = 0;
     self.id_nfts = emptyMap();
+    self.decimal = 1000000000;
   }
 
   receive(msg: OwnershipAssigned) {
-      let ctx: Context = context();
-      // if prevOwner is the owner's (admin) address, then add NFT to the collection
-      if (msg.prevOwner == self.owner) {
+    let ctx: Context = context();
+
+    // if prevOwner is the owner's (admin) address, then add NFT to the collection
+    if (msg.prevOwner == self.owner) {
         self.nfts_number = self.nfts_number + 1;
         self.id_nfts.set(self.nfts_number, sender());
-      }
+    }
 
-      // if value of TON attached is less then 2.1 TON then stop execution and return NFT back,
-      // but only in case that TON attached is enough to process refund without losing TONs on the SC's balance
-      else if ((ctx.value < 2100000000) && (ctx.value > ctx.readForwardFee())) {
+    // if value of TON attached is less then 2.1 TON then stop execution and return NFT back,
+    // but only in case that TON attached is enough to process refund without losing TONs on the SC's balance
+    else if ((ctx.value < (2*self.decimal +self.decimal/10)) && (ctx.value > ctx.readForwardFee())) {
         send(SendParameters{
             to: sender(),
             value: 0,
@@ -100,9 +103,9 @@ contract Task5 with Deployable {
                 forwardAmount: 0,
                 forwardPayload: emptyCell().asSlice()
         }.toCell()});
-      }
+    }
 
-  // randomly select NFT to send from all the NFTs that smart contract has
+    // randomly select NFT to send from all the NFTs that smart contract has
     else {
         let nft_address: Address = newAddress(0, 0);
         let nft_id: Int = random(1, self.nfts_number + 1);
@@ -119,7 +122,7 @@ contract Task5 with Deployable {
         // some incoming TONs will be consumed for gas and the remainings of the incoming TONs should be refunded to the sender
         send(SendParameters{
             to: nft_address,
-            value: ctx.value - 2000000000,
+            value: ctx.value - 2*self.decimal,
             mode: SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
@@ -133,10 +136,15 @@ contract Task5 with Deployable {
   }
 
   receive(msg: AdminWithdrawalProfit) {
+    // SC should check that sender is the admin / otherwise throw "Insufficient privelegies"
     require(sender() == self.owner, "Insufficient privelegies");
+
+    // SC should send all collected fees to admin except 0.1 TON (use AdminFetchProfit message as body)
+    // In other words: after each such operation, the contract's balance should be equal to 0.1 TON
+    // (which are reserved for storage) and the rest should be sent to the admin
     send(SendParameters{
         to: self.owner,
-        value: myBalance() - 100000000,
+        value: myBalance() - self.decimal/10,
         mode: SendIgnoreErrors,
         body: AdminFetchProfit{
             queryId: msg.queryId
@@ -144,6 +152,33 @@ contract Task5 with Deployable {
   }
 
   receive(msg: AdminWithdrawalAllNFTs) {
+    let ctx: Context = context();
+        // SC should check that incoming tx TON value is enough for NFT withdrawal.
+        // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
+        require(ctx.value >= (self.decimal + self.decimal*self.nfts_number*0.08), "Insufficent funds");
+
+        // SC should check that sender is the admin, throw "Invalid sender" otherwise
+        require(sender() == self.owner, "Invalid sender");
+
+        // If all checks pass, SC should send NFTs one by one to the admin
+        // SC should be able to withdraw all NFTs by a single message from admin
+        let index: Int = 1;
+        while (index <= self.nfts_number) {
+            send(SendParameters{
+                to: self.id_nfts.get(index)!!,
+                value: 0,
+                mode: SendIgnoreErrors,
+                body: Transfer{
+                    queryId: msg.queryId,
+                    newOwner: self.owner,
+                    responseDestination: self.owner,
+                    customPayload: null,
+                    forwardAmount: 0,
+                    forwardPayload: emptyCell().asSlice()
+            }.toCell()});
+            index = index + 1;
+        }
+        self.id_nfts = emptyMap();
   }
 
   get fun profit(): Int {
