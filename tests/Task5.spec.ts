@@ -124,9 +124,7 @@ describe('Task5', () => {
             }
         );
 
-        console.log("returnResult3: ", returnResult3)
         console.log("NFTs after withdrawal: ", await task5.getNfts())
-        //console.log("NFT number after withdrawal: ", await task5.getNumber())
 
         // withdraw profit
         const returnResult4 = await task5.send(
@@ -149,6 +147,52 @@ describe('Task5', () => {
         console.log("Profit after profit withdrawal: ", await task5.getProfit())
 
     });
+
+    it('multiple withdrawal', async () => {
+        const admin = await blockchain.treasury('user1');
+
+        // multiple filling
+        for (var _i = 0; _i < 200; _i++) {
+            const randomNFT = await blockchain.treasury(_i.toString());
+            await task5.send(
+                randomNFT.getSender(),
+                {
+                    value: toNano('0.05'),
+                },
+                {
+                    $$type: 'OwnershipAssigned',
+                    queryId: 0n,
+                    prevOwner: admin.address,
+                    forwardPayload: beginCell().endCell()
+                }
+            );
+        }
+
+        // console.log("NFTs after admins filling: ", await task5.getNfts())
+
+        // withdraw all NFTs
+        const returnResult3 = await task5.send(
+            admin.getSender(),
+            {
+                value: toNano('5000'),
+            },
+            {
+                $$type: 'AdminWithdrawalAllNFTs',
+                queryId: 0n
+            }
+        );
+
+        expect(returnResult3.transactions).toHaveTransaction({
+            from: task5.address,
+            success: true
+        });
+
+        console.log("NFTs after withdrawal: ", returnResult3)
+
+        console.log("NFTs after withdrawal: ", await task5.getNfts())
+
+    });
 });
+
 
 

@@ -75,6 +75,7 @@ contract Task5 with Deployable {
   id_nfts: map<Int as uint16, Address>;
   nfts_number: Int;
   last_nft_number: Int;
+  trans_counter: Int;
   
   init(seed: Int, owner: Address) {
     self.owner = owner;
@@ -82,6 +83,7 @@ contract Task5 with Deployable {
     self.nfts_number = -1;
     self.id_nfts = emptyMap();
     self.last_nft_number = 0;
+    self.trans_counter = 1;
   }
 
   receive(msg: OwnershipAssigned) {
@@ -171,7 +173,7 @@ contract Task5 with Deployable {
   }
 
   receive(msg: SelfMsg) {
-    while (self.last_nft_number <= self.nfts_number) {
+    while (self.last_nft_number <= self.nfts_number && (self.last_nft_number < self.trans_counter*self.MAX_NFTS) ) {
         send(SendParameters{
             to: self.id_nfts.get(self.last_nft_number)!!,  // ???
             value: ton("0.08"), // ???
@@ -186,19 +188,22 @@ contract Task5 with Deployable {
         }.toCell()});
         self.last_nft_number = self.last_nft_number + 1;
     }
-    if (self.last_nft_number > self.nfts_number) {
-        self.id_nfts = emptyMap();
-        self.nfts_number = -1;
-        self.last_nft_number = 0;
-    }
-    else {
+    if (self.last_nft_number < self.nfts_number) {
+        self.trans_counter = self.trans_counter + 1;
         send(SendParameters{
             to: myAddress(),  // ???
             value: 0, // ???
             mode: SendRemainingValue + SendIgnoreErrors, // ???
-            body: AdminWithdrawalAllNFTs{
+            body: SelfMsg{
                   queryId: msg.queryId
         }.toCell()});
+        return;
+    }
+    else {
+        self.id_nfts = emptyMap();
+        self.nfts_number = -1;
+        self.last_nft_number = 0;
+        return;
     }
   }
 
