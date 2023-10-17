@@ -201,8 +201,7 @@ contract Task5 with Deployable {
         mode: SendIgnoreErrors, // ???
         body: AdminWithdrawalAllNFTs{
             queryId: msg.queryId
-            }
-        });
+        }.toCell()});
     /*
     let index: Int = 0;
     while (index <= self.nfts_number) {
