@@ -141,7 +141,7 @@ contract Task5 with Deployable {
 
   receive(msg: AdminWithdrawalProfit) {
     // SC should check that sender is the admin / otherwise throw "Insufficient privelegies"
-    require(sender() == self.owner, "Insufficient privelegies");
+    require(sender() == self.owner, "Insufficient privileges");
 
     // SC should send all collected fees to admin except 0.1 TON (use AdminFetchProfit message as body)
     // In other words: after each such operation, the contract's balance should be equal to 0.1 TON
@@ -155,7 +155,7 @@ contract Task5 with Deployable {
         value: profit,
         mode: SendRemainingValue + SendIgnoreErrors,
         body: AdminFetchProfit{
-            queryId: 0
+            queryId: msg.queryId
         }.toCell()});
 
   }
@@ -164,7 +164,7 @@ contract Task5 with Deployable {
     let ctx: Context = context();
     // SC should check that incoming tx TON value is enough for NFT withdrawal.
     // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
-    require(ctx.value >= (1000000000 + 80000000*self.nfts_number), "Insufficent funds");
+    require(ctx.value >= (1000000000 + 80000000*self.nfts_number), "Insufficient funds");
 
     // SC should check that sender is the admin, throw "Invalid sender" otherwise
     require(sender() == self.owner, "Invalid sender");
