@@ -186,7 +186,7 @@ contract Task5 with Deployable {
                 newOwner: self.owner,   // correct
                 responseDestination: self.owner,    // correct
                 customPayload: null,    // correct
-                forwardAmount: 0,   // correct
+                forwardAmount: ton("0.08"),   // ???
                 forwardPayload: emptySlice() // correct
         }.toCell()});
         index = index + 1;
