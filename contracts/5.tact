@@ -65,7 +65,7 @@ message(0x5fcc3d14) Transfer {
 }
 
 contract Task5 with Deployable {
-  const MAX_NFTS: Int = 100;
+  const MAX_NFTS: Int = 50;
   seed: Int as uint128;
   owner: Address;
   id_nfts: map<Int as uint16, Address>;
