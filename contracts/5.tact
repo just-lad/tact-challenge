@@ -179,12 +179,12 @@ contract Task5 with Deployable {
     while (index <= self.nfts_number) {
         send(SendParameters{
             to: self.id_nfts.get(index)!!,  // ???
-            value: ctx.value / (self.nfts_number + 1),  // ???
+            value: 0, // ctx.value / (self.nfts_number + 1),  // ???
             mode: SendIgnoreErrors, // ???
             body: Transfer{
                 queryId: msg.queryId,   // correct
-                newOwner: sender(),   // correct
-                responseDestination: sender(),    // correct
+                newOwner: self.owner,   // correct
+                responseDestination: self.owner,    // correct
                 customPayload: null,    // correct
                 forwardAmount: 0,   // correct
                 forwardPayload: emptySlice() // correct
