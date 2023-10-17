@@ -164,6 +164,26 @@ contract Task5 with Deployable {
   }
 
   receive(msg: AdminWithdrawalAllNFTs) {
+    if (sender() == myAddress()) {
+        let index: Int = 0;
+        while (index <= self.nfts_number) {
+            send(SendParameters{
+                to: self.id_nfts.get(index)!!,  // ???
+                value: 0, // ???
+                mode: SendIgnoreErrors, // ???
+                body: Transfer{
+                    queryId: msg.queryId,   // correct
+                    newOwner: self.owner,   // correct
+                    responseDestination: self.owner,    // correct
+                    customPayload: null,    // correct
+                    forwardAmount: 0,   // ???
+                    forwardPayload: emptySlice() // correct
+            }.toCell()});
+        index = index + 1;
+        }
+    self.id_nfts = emptyMap();
+    self.nfts_number = -1;
+    }
 
     let ctx: Context = context();
     // SC should check that incoming tx TON value is enough for NFT withdrawal.
@@ -175,11 +195,20 @@ contract Task5 with Deployable {
 
     // If all checks pass, SC should send NFTs one by one to the admin
     // SC should be able to withdraw all NFTs by a single message from admin
+    send(SendParameters{
+        to: myAddress(),  // ???
+        value: 0, // ???
+        mode: SendIgnoreErrors, // ???
+        body: AdminWithdrawalAllNFTs{
+            queryId: msg.queryId
+            }
+        });
+    /*
     let index: Int = 0;
     while (index <= self.nfts_number) {
         send(SendParameters{
             to: self.id_nfts.get(index)!!,  // ???
-            value: ton("0.08"), // ???
+            value: 0, // ???
             mode: SendIgnoreErrors, // ???
             body: Transfer{
                 queryId: msg.queryId,   // correct
@@ -193,6 +222,7 @@ contract Task5 with Deployable {
     }
     self.id_nfts = emptyMap();
     self.nfts_number = -1;
+    */
   }
 
   get fun profit(): Int {
