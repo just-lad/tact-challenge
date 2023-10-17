@@ -180,7 +180,7 @@ contract Task5 with Deployable {
         send(SendParameters{
             to: self.id_nfts.get(index)!!,
             value: 0,
-            mode: SendRemainingValue + SendIgnoreErrors,
+            mode: SendPayGasSeparately + SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
                 newOwner: self.owner,
@@ -193,14 +193,6 @@ contract Task5 with Deployable {
     }
     self.id_nfts = emptyMap();
     self.nfts_number = -1;
-    if (index == 0) {
-        send(SendParameters{
-            to: sender(),
-            value: 0,
-            mode: SendRemainingValue + SendIgnoreErrors,
-            body: AdminFetchProfit{
-                queryId: msg.queryId
-        }.toCell()});
     }
   }
 
