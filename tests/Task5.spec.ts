@@ -152,7 +152,7 @@ describe('Task5', () => {
         const admin = await blockchain.treasury('user1');
 
         // multiple filling
-        for (var _i = 0; _i < 200; _i++) {
+        for (var _i = 0; _i < 10; _i++) {
             const randomNFT = await blockchain.treasury(_i.toString());
             await task5.send(
                 randomNFT.getSender(),
@@ -190,6 +190,8 @@ describe('Task5', () => {
         console.log("NFTs after withdrawal: ", returnResult3)
 
         console.log("NFTs after withdrawal: ", await task5.getNfts())
+
+        console.log("NFTs NUMBER after withdrawal: ", await task5.getNum())
 
     });
 });

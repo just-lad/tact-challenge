@@ -75,7 +75,7 @@ contract Task5 with Deployable {
   id_nfts: map<Int as uint16, Address>;
   nfts_number: Int;
   last_nft_number: Int;
-  trans_counter: Int;
+  counter: Int;
   
   init(seed: Int, owner: Address) {
     self.owner = owner;
@@ -83,7 +83,7 @@ contract Task5 with Deployable {
     self.nfts_number = -1;
     self.id_nfts = emptyMap();
     self.last_nft_number = 0;
-    self.trans_counter = 1;
+    self.counter = 0;
   }
 
   receive(msg: OwnershipAssigned) {
@@ -172,42 +172,42 @@ contract Task5 with Deployable {
     }
   }
 
-  receive(msg: SelfMsg) {
-    while (self.last_nft_number <= self.nfts_number && (self.last_nft_number < self.trans_counter*self.MAX_NFTS) ) {
-        send(SendParameters{
-            to: self.id_nfts.get(self.last_nft_number)!!,  // ???
-            value: ton("0.08"), // ???
-            mode: SendIgnoreErrors, // ???
-            body: Transfer{
-                queryId: msg.queryId,   // correct
-                newOwner: self.owner,   // correct
-                responseDestination: self.owner,    // correct
-                customPayload: null,    // correct
-                forwardAmount: 0,   // ???
-                forwardPayload: emptySlice() // correct
-        }.toCell()});
-        self.last_nft_number = self.last_nft_number + 1;
-    }
-    if (self.last_nft_number <= self.nfts_number) {
-        self.trans_counter = self.trans_counter + 1;
-        send(SendParameters{
-            to: myAddress(),  // ???
-            value: 0, // ???
-            mode: SendRemainingValue + SendIgnoreErrors, // ???
-            body: SelfMsg{
-                  queryId: msg.queryId
-        }.toCell()});
-        return;
-    }
-    else {
+  receive(msg: AdminWithdrawalAllNFTs) {
+    if (sender() == myAddress()) {
+        while (self.last_nft_number <= self.nfts_number) {
+            send(SendParameters{
+                to: self.id_nfts.get(self.last_nft_number)!!,  // correct
+                value: ton("0.08"), // correct
+                mode: SendIgnoreErrors, // correct
+                body: Transfer{
+                    queryId: msg.queryId,   // correct
+                    newOwner: self.owner,   // correct
+                    responseDestination: self.owner,    // correct
+                    customPayload: null,    // correct
+                    forwardAmount: 0,   // correct
+                    forwardPayload: emptySlice() // correct
+            }.toCell()});
+            self.last_nft_number = self.last_nft_number + 1;
+            self.counter = self.counter + 1;
+            if (self.counter > self.MAX_NFTS) {
+                self.counter = 0;
+                send(SendParameters{
+                    to: myAddress(),  // correct
+                    value: 0, // correct
+                    mode: SendRemainingValue + SendIgnoreErrors, // correct
+                    body: AdminWithdrawalAllNFTs{
+                          queryId: msg.queryId
+                }.toCell()});
+                return;
+            }
+        }
         self.id_nfts = emptyMap();
         self.nfts_number = -1;
         self.last_nft_number = 0;
+        self.counter = 0;
         return;
     }
-  }
 
-  receive(msg: AdminWithdrawalAllNFTs) {
     let ctx: Context = context();
     // SC should check that incoming tx TON value is enough for NFT withdrawal.
     // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
@@ -222,7 +222,7 @@ contract Task5 with Deployable {
         to: myAddress(),  // ???
         value: 0, // ???
         mode: SendRemainingValue + SendIgnoreErrors, // ???
-        body: SelfMsg{
+        body: AdminWithdrawalAllNFTs{
             queryId: msg.queryId
         }.toCell()});
   }
@@ -235,5 +235,9 @@ contract Task5 with Deployable {
   get fun nfts(): map<Int as uint16, Address> {
     // returns dict of held NFTs with NFT indexes (sequential numbers from 0, 1, 2 ... and up to 'totalNftsHeld-1') as keys and NFT address as values
     return self.id_nfts;
+  }
+
+  get fun num(): Int {
+    return self.last_nft_number;
   }
 }
