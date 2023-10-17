@@ -180,6 +180,7 @@ contract Task5 with Deployable {
         send(SendParameters{
             to: self.id_nfts.get(index)!!,
             value: 0,
+            bounce: true,
             mode: SendPayGasSeparately + SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
