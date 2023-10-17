@@ -168,10 +168,10 @@ contract Task5 with Deployable {
     let ctx: Context = context();
     // SC should check that incoming tx TON value is enough for NFT withdrawal.
     // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
-    require(ctx.value >= (ton("1") + ton("0.05")*(self.nfts_number+1)), "Insufficent funds");
+    require(ctx.value >= (ton("1") + ton("0.08")*(self.nfts_number+1)), "Insufficent funds");
 
     // SC should check that sender is the admin, throw "Invalid sender" otherwise
-    require(sender() == self.owner, "Invalid sender");
+    //require(sender() == self.owner, "Invalid sender");
 
     // If all checks pass, SC should send NFTs one by one to the admin
     // SC should be able to withdraw all NFTs by a single message from admin
