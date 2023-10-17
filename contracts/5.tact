@@ -193,7 +193,7 @@ contract Task5 with Deployable {
             send(SendParameters{
                 to: myAddress(),  // ???
                 value: 0, // ???
-                mode: SendIgnoreErrors, // ???
+                mode: SendRemainingValue + SendIgnoreErrors, // ???
                 body: AdminWithdrawalAllNFTs{
                       queryId: msg.queryId
             }.toCell()});
@@ -213,7 +213,7 @@ contract Task5 with Deployable {
     send(SendParameters{
         to: myAddress(),  // ???
         value: 0, // ???
-        mode: SendIgnoreErrors, // ???
+        mode: SendRemainingValue + SendIgnoreErrors, // ???
         body: AdminWithdrawalAllNFTs{
             queryId: msg.queryId
         }.toCell()});
