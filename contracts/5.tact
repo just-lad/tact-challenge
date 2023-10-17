@@ -172,7 +172,7 @@ contract Task5 with Deployable {
 
     // SC should check that sender is the admin, throw "Invalid sender" otherwise
     require(sender() == self.owner, "Invalid sender");
-/*
+
     // If all checks pass, SC should send NFTs one by one to the admin
     // SC should be able to withdraw all NFTs by a single message from admin
     let index: Int = 0;
@@ -201,7 +201,7 @@ contract Task5 with Deployable {
             body: AdminFetchProfit{
                 queryId: msg.queryId
         }.toCell()});
-    } */
+    }
   }
 
   get fun profit(): Int {
