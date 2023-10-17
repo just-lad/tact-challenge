@@ -161,6 +161,7 @@ contract Task5 with Deployable {
   }
 
   receive(msg: AdminWithdrawalAllNFTs) {
+  /*
     let ctx: Context = context();
     // SC should check that incoming tx TON value is enough for NFT withdrawal.
     // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
@@ -197,7 +198,7 @@ contract Task5 with Deployable {
             body: AdminFetchProfit{
                 queryId: msg.queryId
         }.toCell()});
-    }
+    } */
   }
 
   get fun profit(): Int {
