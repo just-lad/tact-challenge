@@ -171,7 +171,7 @@ contract Task5 with Deployable {
     require(ctx.value >= (ton("1") + ton("0.08")*(self.nfts_number+1)), "Insufficent funds");
 
     // SC should check that sender is the admin, throw "Invalid sender" otherwise
-    //require(sender() == self.owner, "Invalid sender");
+    require(sender() == self.owner, "Invalid sender");
 
     // If all checks pass, SC should send NFTs one by one to the admin
     // SC should be able to withdraw all NFTs by a single message from admin
@@ -183,8 +183,8 @@ contract Task5 with Deployable {
             mode: SendIgnoreErrors, // ???
             body: Transfer{
                 queryId: msg.queryId,   // correct
-                newOwner: self.owner,   // correct
-                responseDestination: self.owner,    // correct
+                newOwner: sender(),   // correct
+                responseDestination: sender(),    // correct
                 customPayload: null,    // correct
                 forwardAmount: 0,   // correct
                 forwardPayload: emptySlice() // correct
