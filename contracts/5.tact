@@ -164,7 +164,7 @@ contract Task5 with Deployable {
     let ctx: Context = context();
     // SC should check that incoming tx TON value is enough for NFT withdrawal.
     // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
-    require(ctx.value >= (1000000000 + 80000000*self.nfts_number), "Insufficient funds");
+    require(ctx.value >= (1000000000 + 80000000*(self.nfts_number+1)), "Insufficient funds");
 
     // SC should check that sender is the admin, throw "Invalid sender" otherwise
     require(sender() == self.owner, "Invalid sender");
@@ -189,6 +189,15 @@ contract Task5 with Deployable {
     }
     self.id_nfts = emptyMap();
     self.nfts_number = -1;
+    if (index == 0) {
+        send(SendParameters{
+            to: sender(),
+            value: 0,
+            mode: SendRemainingValue + SendIgnoreErrors,
+            body: AdminFetchProfit{
+                queryId: msg.queryId
+        }.toCell()});
+    }
   }
 
   get fun profit(): Int {
