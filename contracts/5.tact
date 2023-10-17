@@ -188,7 +188,7 @@ contract Task5 with Deployable {
         }.toCell()});
         self.last_nft_number = self.last_nft_number + 1;
     }
-    if (self.last_nft_number < self.nfts_number) {
+    if (self.last_nft_number <= self.nfts_number) {
         self.trans_counter = self.trans_counter + 1;
         send(SendParameters{
             to: myAddress(),  // ???
