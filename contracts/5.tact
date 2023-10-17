@@ -140,24 +140,13 @@ contract Task5 with Deployable {
     // SC should send all collected fees to admin except 0.1 TON (use AdminFetchProfit message as body)
     // In other words: after each such operation, the contract's balance should be equal to 0.1 TON
     // (which are reserved for storage) and the rest should be sent to the admin
-    if (myBalance() < ton("0.1")) {
-        send(SendParameters{
-            to: sender(),
-            value: 0,
-            mode: SendRemainingValue + SendIgnoreErrors,
-            body: AdminFetchProfit{
-                queryId: msg.queryId
-        }.toCell()});
-    }
-    else {
-        send(SendParameters{
-            to: sender(),
-            value: myBalance() - ton("0.1"),
-            mode: SendRemainingValue + SendIgnoreErrors,
-            body: AdminFetchProfit{
-                queryId: msg.queryId
-        }.toCell()});
-    }
+    send(SendParameters{
+        to: sender(),
+        value: myBalance() - ton("0.1"),
+        mode: SendIgnoreErrors,
+        body: AdminFetchProfit{
+            queryId: msg.queryId
+    }.toCell()});
   }
 
   receive(msg: AdminWithdrawalAllNFTs) {
