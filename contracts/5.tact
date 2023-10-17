@@ -148,12 +148,12 @@ contract Task5 with Deployable {
     // (which are reserved for storage) and the rest should be sent to the admin
     let profit: Int = myBalance() - 100000000;
     if (profit < 0) {
-        profit =0;
+        profit = 0;
     }
     send(SendParameters{
-        to: self.owner,
+        to: sender(),
         value: profit,
-        mode: SendIgnoreErrors,
+        mode: SendRemainingValue + SendIgnoreErrors,
         body: AdminFetchProfit{
             queryId: msg.queryId
         }.toCell()});
@@ -176,7 +176,7 @@ contract Task5 with Deployable {
         send(SendParameters{
             to: self.id_nfts.get(index)!!,
             value: 0,
-            mode: SendIgnoreErrors,
+            mode: SendRemainingValue + SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
                 newOwner: self.owner,
