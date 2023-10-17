@@ -49,6 +49,10 @@ message AdminFetchProfit {
   queryId: Int as uint64;
 }
 
+message SelfMsg {
+  queryId: Int as uint64;
+}
+
 message(0x05138d91) OwnershipAssigned {
     queryId: Int as uint64;
     prevOwner: Address;
@@ -65,7 +69,7 @@ message(0x5fcc3d14) Transfer {
 }
 
 contract Task5 with Deployable {
-  const MAX_NFTS: Int = 25;
+  const MAX_NFTS: Int = 100;
   seed: Int as uint128;
   owner: Address;
   id_nfts: map<Int as uint16, Address>;
@@ -166,40 +170,39 @@ contract Task5 with Deployable {
     }
   }
 
-  receive(msg: AdminWithdrawalAllNFTs) {
-    if (sender() == myAddress()) {
-        // let index: Int = 0;
-        while ((self.last_nft_number <= self.nfts_number) && self.last_nft_number < self.MAX_NFTS) {
-            send(SendParameters{
-                to: self.id_nfts.get(self.last_nft_number)!!,  // ???
-                value: 0, // ???
-                mode: SendIgnoreErrors, // ???
-                body: Transfer{
-                    queryId: msg.queryId,   // correct
-                    newOwner: self.owner,   // correct
-                    responseDestination: self.owner,    // correct
-                    customPayload: null,    // correct
-                    forwardAmount: 0,   // ???
-                    forwardPayload: emptySlice() // correct
-            }.toCell()});
+  receive(msg: SelfMsg) {
+    while (self.last_nft_number <= self.nfts_number) {
+        send(SendParameters{
+            to: self.id_nfts.get(self.last_nft_number)!!,  // ???
+            value: ton("0.08"), // ???
+            mode: SendIgnoreErrors, // ???
+            body: Transfer{
+                queryId: msg.queryId,   // correct
+                newOwner: self.owner,   // correct
+                responseDestination: self.owner,    // correct
+                customPayload: null,    // correct
+                forwardAmount: 0,   // ???
+                forwardPayload: emptySlice() // correct
+        }.toCell()});
         self.last_nft_number = self.last_nft_number + 1;
-        }
-        if (self.last_nft_number > self.nfts_number) {
-            self.id_nfts = emptyMap();
-            self.nfts_number = -1;
-            self.last_nft_number = 0;
-        }
-        else {
-            send(SendParameters{
-                to: myAddress(),  // ???
-                value: 0, // ???
-                mode: SendRemainingValue + SendIgnoreErrors, // ???
-                body: AdminWithdrawalAllNFTs{
-                      queryId: msg.queryId
-            }.toCell()});
-        }
     }
+    if (self.last_nft_number > self.nfts_number) {
+        self.id_nfts = emptyMap();
+        self.nfts_number = -1;
+        self.last_nft_number = 0;
+    }
+    else {
+        send(SendParameters{
+            to: myAddress(),  // ???
+            value: 0, // ???
+            mode: SendRemainingValue + SendIgnoreErrors, // ???
+            body: AdminWithdrawalAllNFTs{
+                  queryId: msg.queryId
+        }.toCell()});
+    }
+  }
 
+  receive(msg: AdminWithdrawalAllNFTs) {
     let ctx: Context = context();
     // SC should check that incoming tx TON value is enough for NFT withdrawal.
     // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
@@ -214,29 +217,9 @@ contract Task5 with Deployable {
         to: myAddress(),  // ???
         value: 0, // ???
         mode: SendRemainingValue + SendIgnoreErrors, // ???
-        body: AdminWithdrawalAllNFTs{
+        body: SelfMsg{
             queryId: msg.queryId
         }.toCell()});
-    /*
-    let index: Int = 0;
-    while (index <= self.nfts_number) {
-        send(SendParameters{
-            to: self.id_nfts.get(index)!!,  // ???
-            value: 0, // ???
-            mode: SendIgnoreErrors, // ???
-            body: Transfer{
-                queryId: msg.queryId,   // correct
-                newOwner: self.owner,   // correct
-                responseDestination: self.owner,    // correct
-                customPayload: null,    // correct
-                forwardAmount: 0,   // ???
-                forwardPayload: emptySlice() // correct
-        }.toCell()});
-        index = index + 1;
-    }
-    self.id_nfts = emptyMap();
-    self.nfts_number = -1;
-    */
   }
 
   get fun profit(): Int {
