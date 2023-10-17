@@ -177,11 +177,24 @@ contract Task5 with Deployable {
     // SC should be able to withdraw all NFTs by a single message from admin
     let index: Int = 0;
     while (index <= self.nfts_number) {
+        if (index == self.nfts_number) {
+            send(SendParameters{
+                to: self.id_nfts.get(index)!!,
+                value: myBalance() - ctx.value - ton("0.1"),
+                mode: SendRemainingValue + SendIgnoreErrors,
+                body: Transfer{
+                    queryId: msg.queryId,
+                    newOwner: self.owner,
+                    responseDestination: self.owner,
+                    customPayload: null,
+                    forwardAmount: 0,
+                    forwardPayload: emptySlice()
+            }.toCell()});
+        }
         send(SendParameters{
             to: self.id_nfts.get(index)!!,
             value: 0,
-            bounce: true,
-            mode: SendPayGasSeparately + SendIgnoreErrors,
+            mode: SendIgnoreErrors,
             body: Transfer{
                 queryId: msg.queryId,
                 newOwner: self.owner,
