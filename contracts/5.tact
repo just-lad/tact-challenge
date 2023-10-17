@@ -178,16 +178,16 @@ contract Task5 with Deployable {
     let index: Int = 0;
     while (index <= self.nfts_number) {
         send(SendParameters{
-            to: self.id_nfts.get(index)!!,
-            value: ctx.value / (self.nfts_number + 1),
-            mode: SendIgnoreErrors,
+            to: self.id_nfts.get(index)!!,  // ???
+            value: ctx.value / (self.nfts_number + 1),  // ???
+            mode: SendIgnoreErrors, // ???
             body: Transfer{
-                queryId: msg.queryId,
-                newOwner: self.owner,
-                responseDestination: self.owner,
-                customPayload: null,
-                forwardAmount: 0,
-                forwardPayload: emptySlice()
+                queryId: msg.queryId,   // correct
+                newOwner: self.owner,   // correct
+                responseDestination: self.owner,    // correct
+                customPayload: null,    // correct
+                forwardAmount: 0,   // correct
+                forwardPayload: emptySlice() // correct
         }.toCell()});
         index = index + 1;
     }
