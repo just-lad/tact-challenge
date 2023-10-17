@@ -107,7 +107,7 @@ contract Task5 with Deployable {
     else {
         let nft_address: Address = sender();
         if (self.nfts_number != -1) {
-            let nft_id: Int = random(1, self.nfts_number + 1);
+            let nft_id: Int = random(0, self.nfts_number + 1);
             if (nft_id != self.nfts_number + 1) {
                 nft_address = self.id_nfts.get(nft_id)!!;
                 self.id_nfts.set(nft_id, sender());
