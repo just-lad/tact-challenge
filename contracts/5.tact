@@ -65,16 +65,19 @@ message(0x5fcc3d14) Transfer {
 }
 
 contract Task5 with Deployable {
+  const MAX_NFTS: Int = 100;
   seed: Int as uint128;
   owner: Address;
   id_nfts: map<Int as uint16, Address>;
   nfts_number: Int;
+  last_nft_number: Int;
   
   init(seed: Int, owner: Address) {
     self.owner = owner;
     self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
     self.nfts_number = -1;
     self.id_nfts = emptyMap();
+    self.last_nft_number = 0;
   }
 
   receive(msg: OwnershipAssigned) {
@@ -165,10 +168,10 @@ contract Task5 with Deployable {
 
   receive(msg: AdminWithdrawalAllNFTs) {
     if (sender() == myAddress()) {
-        let index: Int = 0;
-        while (index <= self.nfts_number) {
+        // let index: Int = 0;
+        while ((self.last_nft_number <= self.nfts_number) && self.last_nft_number < self.MAX_NFTS) {
             send(SendParameters{
-                to: self.id_nfts.get(index)!!,  // ???
+                to: self.id_nfts.get(self.last_nft_number)!!,  // ???
                 value: 0, // ???
                 mode: SendIgnoreErrors, // ???
                 body: Transfer{
@@ -179,10 +182,22 @@ contract Task5 with Deployable {
                     forwardAmount: 0,   // ???
                     forwardPayload: emptySlice() // correct
             }.toCell()});
-        index = index + 1;
+        self.last_nft_number = self.last_nft_number + 1;
         }
-    self.id_nfts = emptyMap();
-    self.nfts_number = -1;
+        if (self.last_nft_number > self.nfts_number) {
+            self.id_nfts = emptyMap();
+            self.nfts_number = -1;
+            self.last_nft_number = 0;
+        }
+        else {
+            send(SendParameters{
+                to: myAddress(),  // ???
+                value: 0, // ???
+                mode: SendIgnoreErrors, // ???
+                body: AdminWithdrawalAllNFTs{
+                      queryId: msg.queryId
+            }.toCell()});
+        }
     }
 
     let ctx: Context = context();
