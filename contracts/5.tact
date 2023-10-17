@@ -88,7 +88,7 @@ contract Task5 with Deployable {
 
     // if value of TON attached is less then 2.1 TON then stop execution and return NFT back,
     // but only in case that TON attached is enough to process refund without losing TONs on the SC's balance
-    else if ((ctx.value < (2100000000)) && (ctx.value > ctx.readForwardFee())) {
+    else if ((ctx.value < (ton("2.1"))) && (ctx.value > ctx.readForwardFee())) {
         send(SendParameters{
             to: sender(),
             value: 0,   // correct
@@ -126,7 +126,7 @@ contract Task5 with Deployable {
         // some incoming TONs will be consumed for gas and the remainings of the incoming TONs should be refunded to the sender
         send(SendParameters{
             to: nft_address,
-            value: ctx.value - 2000000000,  // correct
+            value: ctx.value - ton("2"),  // correct
             mode: SendIgnoreErrors,   // correct
             body: Transfer{
                 queryId: msg.queryId,   // correct
@@ -146,25 +146,31 @@ contract Task5 with Deployable {
     // SC should send all collected fees to admin except 0.1 TON (use AdminFetchProfit message as body)
     // In other words: after each such operation, the contract's balance should be equal to 0.1 TON
     // (which are reserved for storage) and the rest should be sent to the admin
-    let profit: Int = myBalance() - 100000000;
-    if (profit < 0) {
-        profit = 0;
-    }
-    send(SendParameters{
-        to: sender(),
-        value: profit,
-        mode: SendRemainingValue + SendIgnoreErrors,
-        body: AdminFetchProfit{
-            queryId: msg.queryId
+    if (myBalance() < ton("0.1")) {
+        send(SendParameters{
+            to: sender(),
+            value: 0,
+            mode: SendRemainingValue + SendIgnoreErrors,
+            body: AdminFetchProfit{
+                queryId: msg.queryId
         }.toCell()});
-
+    }
+    else {
+        send(SendParameters{
+            to: sender(),
+            value: myBalance() - ton("0.1"),
+            mode: SendRemainingValue + SendIgnoreErrors,
+            body: AdminFetchProfit{
+                queryId: msg.queryId
+        }.toCell()});
+    }
   }
 
   receive(msg: AdminWithdrawalAllNFTs) {
     let ctx: Context = context();
     // SC should check that incoming tx TON value is enough for NFT withdrawal.
     // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
-    require(ctx.value >= (1000000000 + 80000000*(self.nfts_number+1)), "Insufficient funds");
+    require(ctx.value >= (ton("1") + ton("0.08")*(self.nfts_number+1)), "Insufficient funds");
 
     // SC should check that sender is the admin, throw "Invalid sender" otherwise
     require(sender() == self.owner, "Invalid sender");
@@ -202,7 +208,7 @@ contract Task5 with Deployable {
 
   get fun profit(): Int {
     // returns how much collected fees is available to withdraw for the admin (all fees minus 0.1 TON)
-    return (myBalance() - 100000000);
+    return (myBalance() - ton("0.1"));
   }
   
   get fun nfts(): map<Int as uint16, Address> {
