@@ -158,7 +158,7 @@ contract Task3 with Deployable {
     if (jetton == self.jettonAddressB && self.bAmount > 0) {
         return self.aAmount * 1000000000 / self.bAmount;
     }
-    else if (jetton == self.jettonAddressA && self.aAmount > 0)) {
+    else if (jetton == self.jettonAddressA && self.aAmount > 0) {
         return self.bAmount * 1000000000 / self.aAmount;
     }
     return 0;
