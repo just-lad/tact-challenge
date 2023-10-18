@@ -65,22 +65,21 @@ contract Task4 with Deployable {
         self.nft_owner = msg.prevOwner;
         self.lock_until = now() + msg.forwardPayload.loadUint(32);
         self.l_nft = sender();
+        return;
     }
-    else {
-        // return the incoming nft back to the sender
-        send(SendParameters{
-            to: sender(),
-            value: 0,
-            mode: SendRemainingValue + SendIgnoreErrors,
-            body: Transfer{
-                queryId: msg.queryId,
-                newOwner: msg.prevOwner,
-                responseDestination: msg.prevOwner,
-                customPayload: null,
-                forwardAmount: 0,
-                forwardPayload: emptySlice()
-            }.toCell()});
-    }
+    // return the incoming nft back to the sender
+    send(SendParameters{
+        to: sender(),
+        value: 0,
+        mode: SendRemainingValue + SendIgnoreErrors,
+        body: Transfer{
+            queryId: msg.queryId,
+            newOwner: msg.prevOwner,
+            responseDestination: msg.prevOwner,
+            customPayload: null,
+            forwardAmount: 0,
+            forwardPayload: emptySlice()
+    }.toCell()});
   }
 
   receive(msg: NftWithdrawal) {
@@ -90,27 +89,26 @@ contract Task4 with Deployable {
     // If time has not passed
     if (self.lock_until > now()) {
         self.reply("NFT is still locked".asComment());
+        return;
     }
 
     // Otherwise (all good) send the locked nft back
-    else {
-        send(SendParameters{
-            to: self.l_nft!!,
-            value: 0,
-            mode: SendRemainingBalance + SendIgnoreErrors,
-            body: Transfer{
-                queryId: msg.queryId,
-                newOwner: sender(),
-                responseDestination: sender(),
-                customPayload: null,
-                forwardAmount: 0,
-                forwardPayload: emptySlice()
-            }.toCell()});
+    send(SendParameters{
+        to: self.l_nft!!,
+        value: 0,
+        mode: SendRemainingBalance + SendIgnoreErrors,
+        body: Transfer{
+            queryId: msg.queryId,
+            newOwner: sender(),
+            responseDestination: sender(),
+            customPayload: null,
+            forwardAmount: 0,
+            forwardPayload: emptySlice()
+        }.toCell()});
 
-        // unlock all nfts
-        self.l_nft = null;
-        self.nft_owner = null;
-    }
+    // unlock all nfts
+    self.l_nft = null;
+    self.nft_owner = null;
   }
 
   get fun time(): Int {
@@ -118,16 +116,10 @@ contract Task4 with Deployable {
   }
 
   get fun nft(): Address? {
-    /*if (self.l_nft == null) {
-        return null;
-    }*/
     return self.l_nft;
   }
 
   get fun owner(): Address? {
-    /*if (self.nft_owner == null) {
-        return null;
-    }*/
     return self.nft_owner;
   }
 }
