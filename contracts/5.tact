@@ -167,7 +167,7 @@ contract Task5 with Deployable {
                 value: ton("0.08"), // correct
                 mode: SendIgnoreErrors, // correct
                 body: Transfer{
-                    queryId: msg.queryId,   // correct
+                    queryId: 0,   // correct
                     newOwner: self.owner,   // correct
                     responseDestination: self.owner,    // correct
                     customPayload: null,    // correct

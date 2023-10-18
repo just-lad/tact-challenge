@@ -192,7 +192,7 @@ describe('Task5', () => {
 
         console.log("NFTs after withdrawal: ", await task5.getNfts())
 
-        console.log("self.retransactions after withdrawal: ", await task5.getNum())
+        //console.log("self.retransactions after withdrawal: ", await task5.getNum())
 
     });
 });
