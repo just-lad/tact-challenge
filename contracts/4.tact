@@ -65,10 +65,9 @@ contract Task4 with Deployable {
         self.nft_owner = msg.prevOwner;
         self.lock_until = now() + msg.forwardPayload.loadUint(32);
         self.l_nft = sender();
-        return;
     }
-    // return the incoming nft back to the sender
     else {
+        // return the incoming nft back to the sender
         send(SendParameters{
             to: sender(),
             value: 0,
@@ -80,7 +79,7 @@ contract Task4 with Deployable {
                 customPayload: null,
                 forwardAmount: 0,
                 forwardPayload: emptySlice()
-        }.toCell()});
+            }.toCell()});
     }
   }
 
