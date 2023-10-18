@@ -152,7 +152,7 @@ describe('Task5', () => {
         const admin = await blockchain.treasury('user1');
 
         // multiple filling
-        for (var _i = 0; _i < 161; _i++) {
+        for (var _i = 0; _i < 162; _i++) {
             const randomNFT = await blockchain.treasury(_i.toString());
             await task5.send(
                 randomNFT.getSender(),

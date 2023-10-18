@@ -90,52 +90,43 @@ contract Task4 with Deployable {
     // If time has not passed
     if (self.lock_until > now()) {
         self.reply("NFT is still locked".asComment());
+        return;
     }
 
     // Otherwise (all good) send the locked nft back
-    else {
-        send(SendParameters{
-            to: self.l_nft!!,
-            value: 0,
-            mode: SendRemainingBalance + SendIgnoreErrors,
-            body: Transfer{
-                queryId: msg.queryId,
-                newOwner: sender(),
-                responseDestination: sender(),
-                customPayload: null,
-                forwardAmount: 0,
-                forwardPayload: emptySlice()
-            }.toCell()});
+    send(SendParameters{
+        to: self.l_nft!!,
+        value: 0,
+        mode: SendRemainingBalance + SendIgnoreErrors,
+        body: Transfer{
+            queryId: msg.queryId,
+            newOwner: sender(),
+            responseDestination: sender(),
+            customPayload: null,
+            forwardAmount: 0,
+            forwardPayload: emptySlice()
+        }.toCell()});
 
-        // unlock all nfts
-        self.l_nft = null;
-        self.nft_owner = null;
-  }}
+    // unlock all nfts
+    self.l_nft = null;
+    self.nft_owner = null;
+  }
 
   get fun time(): Int {
-    if (self.lock_until <= now()) {
-        return 0;
-    }
-    else {
-        return self.lock_until - now();
-    }
+    return max(self.lock_until - now(), 0);
   }
 
   get fun nft(): Address? {
-    if (self.l_nft == null) {
+    /*if (self.l_nft == null) {
         return null;
-    }
-    else {
-        return self.l_nft!!;
-    }
+    }*/
+    return self.l_nft!!;
   }
 
   get fun owner(): Address? {
-    if (self.nft_owner == null) {
+    /*if (self.nft_owner == null) {
         return null;
-    }
-    else {
-        return self.nft_owner!!;
-    }
+    }*/
+    return self.nft_owner!!;
   }
 }
