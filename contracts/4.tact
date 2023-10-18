@@ -68,18 +68,20 @@ contract Task4 with Deployable {
         return;
     }
     // return the incoming nft back to the sender
-    send(SendParameters{
-        to: sender(),
-        value: 0,
-        mode: SendRemainingValue + SendIgnoreErrors,
-        body: Transfer{
-            queryId: 0,
-            newOwner: msg.prevOwner,
-            responseDestination: msg.prevOwner,
-            customPayload: null,
-            forwardAmount: 0,
-            forwardPayload: emptySlice()
-    }.toCell()});
+    else {
+        send(SendParameters{
+            to: sender(),
+            value: 0,
+            mode: SendRemainingValue + SendIgnoreErrors,
+            body: Transfer{
+                queryId: msg.queryId,
+                newOwner: msg.prevOwner,
+                responseDestination: msg.prevOwner,
+                customPayload: null,
+                forwardAmount: 0,
+                forwardPayload: emptySlice()
+        }.toCell()});
+    }
   }
 
   receive(msg: NftWithdrawal) {
@@ -98,7 +100,7 @@ contract Task4 with Deployable {
             value: 0,
             mode: SendRemainingBalance + SendIgnoreErrors,
             body: Transfer{
-                queryId: 0,
+                queryId: msg.queryId,
                 newOwner: sender(),
                 responseDestination: sender(),
                 customPayload: null,
