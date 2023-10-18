@@ -56,7 +56,7 @@ contract Task3 with Deployable {
   bAmount: Int;
   jettonAddressA: Address;
   jettonAddressB: Address;
-  decimal: Int;
+  //decimal: Int;
 
   init(admin: Address, newJettonAddressA: Address, newJettonAddressB: Address) {
     self.owner = admin;
@@ -64,7 +64,7 @@ contract Task3 with Deployable {
     self.jettonAddressB = newJettonAddressB;
     self.aAmount = 0;
     self.bAmount = 0;
-    self.decimal = 1000000000;
+    //self.decimal = 1000000000;
   }
 
   receive(msg: TokenNotification) {
