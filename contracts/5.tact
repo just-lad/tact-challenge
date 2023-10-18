@@ -162,7 +162,7 @@ contract Task5 with Deployable {
             send(SendParameters{
                 to: self.id_nfts.get(self.last_nft_number)!!,  // correct
                 value: ton("0.08"), // correct
-                mode: SendIgnoreErrors, // correct
+                mode: SendIgnoreErrors + SendPayGasSeparately, // correct
                 body: Transfer{
                     queryId: msg.queryId,   // correct
                     newOwner: self.owner,   // correct
@@ -174,21 +174,23 @@ contract Task5 with Deployable {
             self.last_nft_number = self.last_nft_number + 1;
             self.counter = self.counter + 1;
 
-            /*if (self.counter >= self.MAX_NFTS && self.last_nft_number <= self.nfts_number) {
+            if (self.counter >= self.MAX_NFTS && self.last_nft_number <= self.nfts_number) {
                 send(SendParameters{
                     to: myAddress(),  // correct
                     value: 0, // correct
-                    mode: SendIgnoreErrors + SendRemainingValue, // correct
+                    mode: SendIgnoreErrors + SendRemainingValue + SendPayGasSeparately, // correct
                     body: AdminWithdrawalAllNFTs{
                           queryId: msg.queryId
                 }.toCell()});
                 self.counter = 0;
-            }*/
-            if (self.last_nft_number > self.nfts_number || self.counter >= self.MAX_NFTS) {
+                return;
+            }
+            else {//if (self.last_nft_number > self.nfts_number || self.counter >= self.MAX_NFTS) {
                 self.id_nfts = emptyMap();
                 self.nfts_number = -1;
                 self.last_nft_number = 0;
                 self.counter = 0;
+                return;
             }
         }
     }
@@ -205,7 +207,7 @@ contract Task5 with Deployable {
         send(SendParameters{
             to: myAddress(),  // ???
             value: 0, // ???
-            mode: SendIgnoreErrors + SendRemainingValue, // ???
+            mode: SendIgnoreErrors + SendRemainingValue + SendPayGasSeparately, // ???
             body: AdminWithdrawalAllNFTs{
                 queryId: msg.queryId
             }.toCell()});
