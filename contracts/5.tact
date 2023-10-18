@@ -69,13 +69,14 @@ message(0x5fcc3d14) Transfer {
 }
 
 contract Task5 with Deployable {
-  const MAX_NFTS: Int = 100;
+  const MAX_NFTS: Int = 160;
   seed: Int as uint128;
   owner: Address;
   id_nfts: map<Int as uint16, Address>;
   nfts_number: Int;
   last_nft_number: Int;
   counter: Int;
+  retransactions: Int;
   
   init(seed: Int, owner: Address) {
     self.owner = owner;
@@ -84,6 +85,7 @@ contract Task5 with Deployable {
     self.id_nfts = emptyMap();
     self.last_nft_number = 0;
     self.counter = 0;
+    self.retransactions = 0;
   }
 
   receive(msg: OwnershipAssigned) {
@@ -173,11 +175,12 @@ contract Task5 with Deployable {
   }
 
   receive(msg: AdminWithdrawalAllNFTs) {
+    let ctx: Context = context();
     if (sender() == myAddress()) {
-        while (self.last_nft_number <= self.nfts_number) {
+        while (self.last_nft_number <= self.nfts_number) {// && (self.counter <= self.MAX_NFTS)) {
             send(SendParameters{
                 to: self.id_nfts.get(self.last_nft_number)!!,  // correct
-                value: ton("0.08"), // correct
+                value: ton("0.002"), // correct
                 mode: SendIgnoreErrors, // correct
                 body: Transfer{
                     queryId: msg.queryId,   // correct
@@ -189,42 +192,44 @@ contract Task5 with Deployable {
             }.toCell()});
             self.last_nft_number = self.last_nft_number + 1;
             self.counter = self.counter + 1;
-            if (self.counter > self.MAX_NFTS) {
-                self.counter = 0;
+
+            if (self.counter >= self.MAX_NFTS && self.last_nft_number <= self.nfts_number) {
                 send(SendParameters{
-                    to: myAddress(),  // correct
+                    to: sender(),  // correct
                     value: 0, // correct
                     mode: SendRemainingValue + SendIgnoreErrors, // correct
                     body: AdminWithdrawalAllNFTs{
                           queryId: msg.queryId
                 }.toCell()});
-                return;
+                self.counter = 0;
+                self.retransactions = self.retransactions + 1;
+            }
+            if (self.last_nft_number > self.nfts_number) {
+                self.id_nfts = emptyMap();
+                self.nfts_number = -1;
+                self.last_nft_number = 0;
+                self.counter = 0;
             }
         }
-        self.id_nfts = emptyMap();
-        self.nfts_number = -1;
-        self.last_nft_number = 0;
-        self.counter = 0;
-        return;
     }
+    else {
+        // SC should check that incoming tx TON value is enough for NFT withdrawal.
+        // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
+        require(ctx.value >= (ton("1") + ton("0.08")*(self.nfts_number+1)), "Insufficent funds");
 
-    let ctx: Context = context();
-    // SC should check that incoming tx TON value is enough for NFT withdrawal.
-    // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
-    require(ctx.value >= (ton("1") + ton("0.08")*(self.nfts_number+1)), "Insufficent funds");
+        // SC should check that sender is the admin, throw "Invalid sender" otherwise
+        require(sender() == self.owner, "Invalid sender");
 
-    // SC should check that sender is the admin, throw "Invalid sender" otherwise
-    require(sender() == self.owner, "Invalid sender");
-
-    // If all checks pass, SC should send NFTs one by one to the admin
-    // SC should be able to withdraw all NFTs by a single message from admin
-    send(SendParameters{
-        to: myAddress(),  // ???
-        value: 0, // ???
-        mode: SendRemainingValue + SendIgnoreErrors, // ???
-        body: AdminWithdrawalAllNFTs{
-            queryId: msg.queryId
-        }.toCell()});
+        // If all checks pass, SC should send NFTs one by one to the admin
+        // SC should be able to withdraw all NFTs by a single message from admin
+        send(SendParameters{
+            to: myAddress(),  // ???
+            value: 0, // ???
+            mode: SendRemainingValue + SendIgnoreErrors, // ???
+            body: AdminWithdrawalAllNFTs{
+                queryId: msg.queryId
+            }.toCell()});
+    }
   }
 
   get fun profit(): Int {
@@ -238,6 +243,6 @@ contract Task5 with Deployable {
   }
 
   get fun num(): Int {
-    return self.last_nft_number;
+    return self.retransactions;
   }
 }
