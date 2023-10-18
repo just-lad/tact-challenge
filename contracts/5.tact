@@ -65,7 +65,7 @@ message(0x5fcc3d14) Transfer {
 }
 
 contract Task5 with Deployable {
-  const MAX_NFTS: Int = 100;
+  const MAX_NFTS: Int = 160;
   seed: Int as uint128;
   owner: Address;
   id_nfts: map<Int as uint16, Address>;
@@ -89,7 +89,6 @@ contract Task5 with Deployable {
     if (msg.prevOwner == self.owner) {
         self.nfts_number = self.nfts_number + 1;
         self.id_nfts.set(self.nfts_number, sender());
-        return;
     }
 
     // if value of TON attached is less then 2.1 TON then stop execution and return NFT back,
@@ -107,7 +106,6 @@ contract Task5 with Deployable {
                 forwardAmount: 0,   // correct
                 forwardPayload: emptySlice()    //correct
         }.toCell()});
-        return;
     }
 
     // randomly select NFT to send from all the NFTs that smart contract has
@@ -151,7 +149,6 @@ contract Task5 with Deployable {
     send(SendParameters{
         to: sender(),
         value: myBalance() - ctx.value - ton("0.1"),
-        bounce: true,
         mode: SendRemainingValue + SendIgnoreErrors,
         body: AdminFetchProfit{
             queryId: msg.queryId
@@ -167,7 +164,7 @@ contract Task5 with Deployable {
                 value: ton("0.08"), // correct
                 mode: SendIgnoreErrors, // correct
                 body: Transfer{
-                    queryId: 0,   // correct
+                    queryId: msg.queryId,   // correct
                     newOwner: self.owner,   // correct
                     responseDestination: self.owner,    // correct
                     customPayload: null,    // correct
@@ -177,17 +174,17 @@ contract Task5 with Deployable {
             self.last_nft_number = self.last_nft_number + 1;
             self.counter = self.counter + 1;
 
-            if (self.counter >= self.MAX_NFTS && self.last_nft_number <= self.nfts_number) {
+            /*if (self.counter >= self.MAX_NFTS && self.last_nft_number <= self.nfts_number) {
                 send(SendParameters{
                     to: myAddress(),  // correct
                     value: 0, // correct
                     mode: SendIgnoreErrors + SendRemainingValue, // correct
                     body: AdminWithdrawalAllNFTs{
-                          queryId: 0
+                          queryId: msg.queryId
                 }.toCell()});
                 self.counter = 0;
-            }
-            if (self.last_nft_number > self.nfts_number) {
+            }*/
+            if (self.last_nft_number > self.nfts_number || self.counter >= self.MAX_NFTS) {
                 self.id_nfts = emptyMap();
                 self.nfts_number = -1;
                 self.last_nft_number = 0;
@@ -210,7 +207,7 @@ contract Task5 with Deployable {
             value: 0, // ???
             mode: SendIgnoreErrors + SendRemainingValue, // ???
             body: AdminWithdrawalAllNFTs{
-                queryId: 0
+                queryId: msg.queryId
             }.toCell()});
     }
   }

@@ -30,7 +30,6 @@ contract Task2 with Deployable {
         to: msg.sender,
         value: 0,
         mode: SendIgnoreErrors + SendRemainingValue,
-        bounce: true,
         body: emptyCell()
     });
   }
@@ -40,7 +39,6 @@ contract Task2 with Deployable {
         to: self.admin,
         value: 0,
         mode: SendIgnoreErrors + SendRemainingValue,
-        bounce: true,
         body: beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell()
   });
 }
