@@ -179,11 +179,11 @@ contract Task5 with Deployable {
 
             if (self.counter >= self.MAX_NFTS && self.last_nft_number <= self.nfts_number) {
                 send(SendParameters{
-                    to: sender(),  // correct
+                    to: myAddress(),  // correct
                     value: 0, // correct
                     mode: SendIgnoreErrors + SendRemainingValue, // correct
                     body: AdminWithdrawalAllNFTs{
-                          queryId: msg.queryId
+                          queryId: 0
                 }.toCell()});
                 self.counter = 0;
             }
@@ -210,7 +210,7 @@ contract Task5 with Deployable {
             value: 0, // ???
             mode: SendIgnoreErrors + SendRemainingValue, // ???
             body: AdminWithdrawalAllNFTs{
-                queryId: msg.queryId
+                queryId: 0
             }.toCell()});
     }
   }

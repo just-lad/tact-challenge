@@ -75,8 +75,8 @@ contract Task3 with Deployable {
             self.aAmount = self.aAmount + msg.amount;
             return;
         }
-        let b_Amount: Int = (self.bAmount * 1000000000 / self.aAmount) * msg.amount / 1000000000;
-        if (self.bAmount < b_Amount) {
+        //let b_Amount: Int = (self.bAmount * 1000000000 / self.aAmount) * msg.amount / 1000000000;
+        if (self.bAmount < (self.bAmount * 1000000000 / self.aAmount) * msg.amount / 1000000000) {
             // return tokens to user
             send(SendParameters{
                 to: self.jettonAddressA,
@@ -100,14 +100,14 @@ contract Task3 with Deployable {
             mode: SendRemainingValue + SendIgnoreErrors,
             body: TokenTransfer{
                 queryId: 0,
-                amount: b_Amount,
+                amount: (self.bAmount * 1000000000 / self.aAmount) * msg.amount / 1000000000,
                 destination: msg.from,
                 responseDestination: myAddress(),
                 customPayload: null,
                 forwardTonAmount: 10000000,
                 forwardPayload: emptySlice()
             }.toCell()});
-        self.bAmount = self.bAmount - b_Amount;
+        self.bAmount = self.bAmount - (self.bAmount * 1000000000 / self.aAmount) * msg.amount / 1000000000;
         self.aAmount = self.aAmount + msg.amount;
         return;
     }
@@ -115,8 +115,8 @@ contract Task3 with Deployable {
         self.bAmount = self.bAmount + msg.amount;
         return;
     }
-    let a_Amount: Int = (self.aAmount * 1000000000 / self.bAmount) * msg.amount / 1000000000;
-    if (self.aAmount < a_Amount) {
+    //let a_Amount: Int = (self.aAmount * 1000000000 / self.bAmount) * msg.amount / 1000000000;
+    if (self.aAmount < (self.aAmount * 1000000000 / self.bAmount) * msg.amount / 1000000000) {
         // return tokens to user
         send(SendParameters{
             to: self.jettonAddressB,
@@ -140,14 +140,14 @@ contract Task3 with Deployable {
         mode: SendRemainingValue + SendIgnoreErrors,
         body: TokenTransfer{
             queryId: 0,
-            amount: a_Amount,
+            amount: (self.aAmount * 1000000000 / self.bAmount) * msg.amount / 1000000000,
             destination: msg.from,
             responseDestination: myAddress(),
             customPayload: null,
             forwardTonAmount: 10000000,
             forwardPayload: emptySlice()
         }.toCell()});
-    self.aAmount = self.aAmount - a_Amount;
+    self.aAmount = self.aAmount - (self.aAmount * 1000000000 / self.bAmount) * msg.amount / 1000000000;
     self.bAmount = self.bAmount + msg.amount;
     return;
   }
