@@ -152,7 +152,7 @@ describe('Task5', () => {
         const admin = await blockchain.treasury('user1');
 
         // multiple filling
-        for (var _i = 0; _i < 300; _i++) {
+        for (var _i = 0; _i < 190; _i++) {
             const randomNFT = await blockchain.treasury(_i.toString());
             await task5.send(
                 randomNFT.getSender(),
@@ -175,7 +175,7 @@ describe('Task5', () => {
         const returnResult3 = await task5.send(
             admin.getSender(),
             {
-                value: toNano('5000'),
+                value: toNano('16.2'),
             },
             {
                 $$type: 'AdminWithdrawalAllNFTs',

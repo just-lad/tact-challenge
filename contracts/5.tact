@@ -180,7 +180,7 @@ contract Task5 with Deployable {
         while (self.last_nft_number <= self.nfts_number && self.counter <= self.MAX_NFTS) {
             send(SendParameters{
                 to: self.id_nfts.get(self.last_nft_number)!!,  // correct
-                value: ton("0.002"), // correct
+                value: ton("0.08"), // correct
                 mode: SendIgnoreErrors, // correct
                 body: Transfer{
                     queryId: msg.queryId,   // correct
