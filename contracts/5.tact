@@ -91,7 +91,7 @@ contract Task5 with Deployable {
 
     // if value of TON attached is less then 2.1 TON then stop execution and return NFT back,
     // but only in case that TON attached is enough to process refund without losing TONs on the SC's balance
-    else if ((ctx.value < (ton("2.1"))) && (ctx.value > ctx.readForwardFee())) {
+    else if ((ctx.value < 2100000000) && (ctx.value > ctx.readForwardFee())) {
         send(SendParameters{
             to: sender(),
             value: 0,   // correct
@@ -123,7 +123,7 @@ contract Task5 with Deployable {
         // some incoming TONs will be consumed for gas and the remainings of the incoming TONs should be refunded to the sender
         send(SendParameters{
             to: nft_address,
-            value: ctx.value - ton("2"),  // correct
+            value: ctx.value - 2000000000,  // correct
             mode: SendIgnoreErrors,   // correct
             body: Transfer{
                 queryId: msg.queryId,   // correct
@@ -146,7 +146,7 @@ contract Task5 with Deployable {
     // (which are reserved for storage) and the rest should be sent to the admin
     send(SendParameters{
         to: sender(),
-        value: myBalance() - ctx.value - ton("0.1"),
+        value: myBalance() - ctx.value - 100000000,
         mode: SendRemainingValue + SendIgnoreErrors,
         body: AdminFetchProfit{
             queryId: msg.queryId
@@ -159,7 +159,7 @@ contract Task5 with Deployable {
         repeat (160) {
             send(SendParameters{
                 to: self.id_nfts.get(self.nfts_number-1)!!,  // correct
-                value: ton("0.08"), // correct
+                value: 80000000, // correct
                 mode: SendIgnoreErrors, // correct
                 body: Transfer{
                     queryId: msg.queryId,   // correct
@@ -177,20 +177,18 @@ contract Task5 with Deployable {
                 return;
             }
         }
-        if (self.nfts_number > 0) {
-            send(SendParameters{
-                to: sender(),  // correct
-                value: ctx.value - ton("0.08")*self.nft_transfers,
-                mode: SendPayGasSeparately + SendIgnoreErrors,
-                body: AdminWithdrawalAllNFTs{
-                      queryId: msg.queryId
-            }.toCell()});
-        }
+        send(SendParameters{
+            to: sender(),  // correct
+            value: ctx.value - 80000000*self.nft_transfers,
+            mode: SendPayGasSeparately + SendIgnoreErrors,
+            body: AdminWithdrawalAllNFTs{
+                  queryId: msg.queryId
+        }.toCell()});
     }
     else {
         // SC should check that incoming tx TON value is enough for NFT withdrawal.
         // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
-        require(ctx.value >= (ton("1") + ton("0.08")*(self.nfts_number)), "Insufficent funds");
+        require(ctx.value >= (1000000000 + 80000000*(self.nfts_number)), "Insufficent funds");
 
         // SC should check that sender is the admin, throw "Invalid sender" otherwise
         require(sender() == self.owner, "Invalid sender");
@@ -200,7 +198,7 @@ contract Task5 with Deployable {
         repeat (160) {
             send(SendParameters{
                 to: self.id_nfts.get(self.nfts_number-1)!!,  // correct
-                value: ton("0.08"), // correct
+                value: 80000000, // correct
                 mode: SendIgnoreErrors, // correct
                 body: Transfer{
                     queryId: msg.queryId,   // correct
@@ -208,7 +206,7 @@ contract Task5 with Deployable {
                     responseDestination: self.owner,    // correct
                     customPayload: null,    // correct
                     forwardAmount: 0,   // correct
-                    forwardPayload: emptySlice() // correct
+                    forwardPayload: emptySlice()
             }.toCell()});
             self.nfts_number = self.nfts_number - 1;
             self.nft_transfers = self.nft_transfers + 1;
@@ -218,25 +216,21 @@ contract Task5 with Deployable {
                 return;
             }
         }
-        if (self.nfts_number > 0) {
-            send(SendParameters{
-                to: myAddress(),  // correct
-                value: ctx.value - ton("0.08")*self.nft_transfers,
-                mode: SendPayGasSeparately + SendIgnoreErrors,
-                body: AdminWithdrawalAllNFTs{
-                      queryId: msg.queryId
-            }.toCell()});
-        }
+        send(SendParameters{
+            to: myAddress(),
+            value: ctx.value - 80000000*self.nft_transfers,
+            mode: SendPayGasSeparately + SendIgnoreErrors,
+            body: AdminWithdrawalAllNFTs{
+                  queryId: msg.queryId
+        }.toCell()});
     }
   }
 
   get fun profit(): Int {
-    // returns how much collected fees is available to withdraw for the admin (all fees minus 0.1 TON)
-    return (myBalance() - ton("0.1"));
+    return (myBalance() - 100000000);
   }
 
   get fun nfts(): map<Int as uint16, Address> {
-    // returns dict of held NFTs with NFT indexes (sequential numbers from 0, 1, 2 ... and up to 'totalNftsHeld-1') as keys and NFT address as values
     return self.id_nfts;
   }
 }
