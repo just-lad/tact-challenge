@@ -176,13 +176,15 @@ contract Task5 with Deployable {
                 return;
             }
         }
-        send(SendParameters{
-            to: sender(),  // correct
-            value: ctx.value - 80000000*self.nft_transfers,
-            mode: SendPayGasSeparately + SendIgnoreErrors,
-            body: AdminWithdrawalAllNFTs{
-                  queryId: msg.queryId
-        }.toCell()});
+        if (self.nfts_number > 0) {
+            send(SendParameters{
+                to: sender(),  // correct
+                value: ctx.value - 80000000*self.nft_transfers,
+                mode: SendPayGasSeparately + SendIgnoreErrors,
+                body: AdminWithdrawalAllNFTs{
+                      queryId: msg.queryId
+            }.toCell()});
+        }
     }
     else {
         // SC should check that incoming tx TON value is enough for NFT withdrawal.
@@ -215,13 +217,15 @@ contract Task5 with Deployable {
                 return;
             }
         }
-        send(SendParameters{
-            to: myAddress(),
-            value: ctx.value - 80000000*self.nft_transfers,
-            mode: SendPayGasSeparately + SendIgnoreErrors,
-            body: AdminWithdrawalAllNFTs{
-                  queryId: msg.queryId
-        }.toCell()});
+        if (self.nfts_number > 0) {
+            send(SendParameters{
+                to: myAddress(),
+                value: ctx.value - 80000000*self.nft_transfers,
+                mode: SendPayGasSeparately + SendIgnoreErrors,
+                body: AdminWithdrawalAllNFTs{
+                      queryId: msg.queryId
+            }.toCell()});
+        }
     }
   }
 
