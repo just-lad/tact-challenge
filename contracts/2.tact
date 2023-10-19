@@ -47,12 +47,5 @@ contract Task2 with Deployable {
                     .storeRef(beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell()) // Save not null body
                     .endCell();
     nativeSendMessage(c, SendIgnoreErrors + SendRemainingValue);
-
-    /*send(SendParameters{
-        to: self.admin,
-        value: 0,
-        mode: SendIgnoreErrors + SendRemainingValue,
-        body: beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell()
-  });*/
-}
+  }
 }
