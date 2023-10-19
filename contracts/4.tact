@@ -101,31 +101,31 @@ contract Task4 with Deployable {
     }
 
     // Otherwise (all good) send the locked nft back
-    else {
-        let c: Cell = beginCell()
-            .storeInt(1, 2) // internal_message + ihd_disabled
-            .storeBool(true) // bounce
-            .storeInt(0, 3) // bounced + from
-            .storeAddress(self.l_nft!!) // To
-            .storeCoins(0) // Value
-            .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-            .storeBool(false) // No state init (code and data null)
-            .storeBool(true) // Body not null
-            .storeRef(Transfer{
-                            queryId: msg.queryId,
-                            newOwner: sender(),
-                            responseDestination: sender(),
-                            customPayload: null,
-                            forwardAmount: 0,
-                            forwardPayload: emptySlice()
-                            }.toCell()) // Save not null body
-            .endCell();
-        nativeSendMessage(c, SendIgnoreErrors + SendRemainingValue);
+    //else {
+    let c: Cell = beginCell()
+        .storeInt(1, 2) // internal_message + ihd_disabled
+        .storeBool(true) // bounce
+        .storeInt(0, 3) // bounced + from
+        .storeAddress(self.l_nft!!) // To
+        .storeCoins(0) // Value
+        .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+        .storeBool(false) // No state init (code and data null)
+        .storeBool(true) // Body not null
+        .storeRef(Transfer{
+                        queryId: msg.queryId,
+                        newOwner: sender(),
+                        responseDestination: sender(),
+                        customPayload: null,
+                        forwardAmount: 0,
+                        forwardPayload: emptySlice()
+                        }.toCell()) // Save not null body
+        .endCell();
+    nativeSendMessage(c, SendIgnoreErrors + SendRemainingValue);
 
-        // unlock all nfts
-        self.l_nft = null;
-        self.nft_owner = null;
-    }
+    // unlock all nfts
+    self.l_nft = null;
+    self.nft_owner = null;
+    //}
   }
 
   get fun time(): Int {
