@@ -69,7 +69,7 @@ message(0x5fcc3d14) Transfer {
 }
 
 contract Task5 with Deployable {
-  const MAX_NFTS: Int = 100;
+  const MAX_NFTS: Int = 160;
   seed: Int as uint128;
   owner: Address;
   id_nfts: map<Int as uint16, Address>;
@@ -222,13 +222,40 @@ contract Task5 with Deployable {
 
         // If all checks pass, SC should send NFTs one by one to the admin
         // SC should be able to withdraw all NFTs by a single message from admin
-        send(SendParameters{
-            to: myAddress(),  // ???
-            value: ctx.value, // ???
-            mode: SendPayGasSeparately + SendIgnoreErrors, // ???
-            body: AdminWithdrawalAllNFTs{
-                queryId: msg.queryId
+        while (self.last_nft_number <= self.nfts_number && self.counter <= self.MAX_NFTS) {
+            send(SendParameters{
+                to: self.id_nfts.get(self.last_nft_number)!!,  // correct
+                value: ton("0.08"), // correct
+                mode: SendIgnoreErrors, // correct
+                body: Transfer{
+                    queryId: msg.queryId,   // correct
+                    newOwner: self.owner,   // correct
+                    responseDestination: self.owner,    // correct
+                    customPayload: null,    // correct
+                    forwardAmount: 0,   // correct
+                    forwardPayload: emptySlice() // correct
             }.toCell()});
+            self.last_nft_number = self.last_nft_number + 1;
+            self.counter = self.counter + 1;
+        }
+        if (self.last_nft_number <= self.nfts_number) {
+            send(SendParameters{
+                to: myAddress(),  // correct
+                value: ctx.value - ton("0.08")*self.counter, // correct
+                mode: SendPayGasSeparately + SendIgnoreErrors, // correct
+                body: AdminWithdrawalAllNFTs{
+                      queryId: msg.queryId
+            }.toCell()});
+            self.retransactions = self.retransactions + 1;
+            self.counter = 0;
+        }
+        else {
+            self.id_nfts = emptyMap();
+            self.nfts_number = -1;
+            self.last_nft_number = 0;
+            self.counter = 0;
+            self.retransactions = 0;
+        }
     }
   }
 
