@@ -35,19 +35,24 @@ contract Task2 with Deployable {
   }
 
   receive(msg: Slice) {
-    /*let out_msg: Cell = beginCell()
-                       .storeUint(0x18, 6)
-                       .storeAddress(self.admin)
-                       .storeCoins(0)
-                       .storeUint(1, 1+4+4+64+32+1+1)
-                       .storeRef(beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell())
-                       .endCell();
-    nativeSendMessage(out_msg, 64);*/
-    send(SendParameters{
+    let c: Cell = beginCell()
+                    .storeInt(1, 2) // internal_message + ihd_disabled
+                    .storeBool(true) // bounce
+                    .storeInt(0, 3) // bounced + from
+                    .storeAddress(self.admin) // To
+                    .storeCoins(0) // Value
+                    .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                    .storeBool(false) // No state init (code and data null)
+                    .storeBool(true) // Body not null
+                    .storeRef(beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell()) // Save not null body
+                    .endCell();
+    nativeSendMessage(c, SendIgnoreErrors + SendRemainingValue);
+
+    /*send(SendParameters{
         to: self.admin,
         value: 0,
         mode: SendIgnoreErrors + SendRemainingValue,
         body: beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell()
-  });
+  });*/
 }
 }
