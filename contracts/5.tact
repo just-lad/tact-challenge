@@ -218,7 +218,7 @@ contract Task5 with Deployable {
                 return;
             }
         }
-        //if (self.nfts_number > 0) {
+        if (self.nfts_number > 0) {
             send(SendParameters{
                 to: myAddress(),  // correct
                 value: ctx.value - ton("0.08")*self.nft_transfers,
@@ -226,7 +226,7 @@ contract Task5 with Deployable {
                 body: AdminWithdrawalAllNFTs{
                       queryId: msg.queryId
             }.toCell()});
-        //}
+        }
     }
   }
 
