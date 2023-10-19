@@ -67,7 +67,7 @@ contract Task4 with Deployable {
         self.l_nft = sender();
         return;
     }
-    //else {
+
     // return the incoming nft back to the sender
     let c: Cell = beginCell()
         .storeInt(1, 2) // internal_message + ihd_disabled
@@ -88,7 +88,6 @@ contract Task4 with Deployable {
                         }.toCell()) // Save not null body
         .endCell();
     nativeSendMessage(c, SendIgnoreErrors + SendRemainingValue);
-    //}
   }
 
   receive(msg: NftWithdrawal) {

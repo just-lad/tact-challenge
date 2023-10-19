@@ -151,17 +151,18 @@ contract Task5 with Deployable {
   receive(msg: AdminWithdrawalProfit) {
     // SC should check that sender is the admin / otherwise throw "Insufficient privelegies"
     require(sender() == self.owner, "Insufficient privelegies");
-    let ctx: Context = context();
+    //let ctx: Context = context();
 
     // SC should send all collected fees to admin except 0.1 TON (use AdminFetchProfit message as body)
     // In other words: after each such operation, the contract's balance should be equal to 0.1 TON
     // (which are reserved for storage) and the rest should be sent to the admin
+    nativeReserve(ton("0.1"), 0+8);
     let c: Cell = beginCell()
         .storeInt(1, 2) // internal_message + ihd_disabled
         .storeBool(true) // bounce
         .storeInt(0, 3) // bounced + from
         .storeAddress(sender()) // To
-        .storeCoins(myBalance() - ctx.value - ton("0.1")) // Value
+        .storeCoins(0) // Value
         .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
         .storeBool(false) // No state init (code and data null)
         .storeBool(true) // Body not null
@@ -169,7 +170,7 @@ contract Task5 with Deployable {
                         queryId: msg.queryId
                         }.toCell()) // Save not null body
         .endCell();
-    nativeSendMessage(c, SendRemainingValue + SendIgnoreErrors);
+    nativeSendMessage(c, SendRemainingBalance + SendIgnoreErrors);
   }
 
   receive(msg: AdminWithdrawalAllNFTs) {
