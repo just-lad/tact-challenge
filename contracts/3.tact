@@ -56,7 +56,6 @@ contract Task3 with Deployable {
   bAmount: Int;
   jettonAddressA: Address;
   jettonAddressB: Address;
-  //decimal: Int;
 
   init(admin: Address, newJettonAddressA: Address, newJettonAddressB: Address) {
     self.owner = admin;
@@ -64,7 +63,6 @@ contract Task3 with Deployable {
     self.jettonAddressB = newJettonAddressB;
     self.aAmount = 0;
     self.bAmount = 0;
-    //self.decimal = 1000000000;
   }
 
   receive(msg: TokenNotification) {
@@ -77,49 +75,47 @@ contract Task3 with Deployable {
         let b_Amount: Int = (self.bAmount * 1000000000 / self.aAmount) * msg.amount / 1000000000;
         if (self.bAmount < b_Amount) {
             // return tokens to user
-            let c: Cell = beginCell()
-                .storeInt(1, 2) // internal_message + ihd_disabled
-                .storeBool(true) // bounce
-                .storeInt(0, 3) // bounced + from
-                .storeAddress(self.jettonAddressA) // To
-                .storeCoins(0) // Value
-                .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-                .storeBool(false) // No state init (code and data null)
-                .storeBool(true) // Body not null
-                .storeRef(TokenTransfer{
-                                    queryId: 0,
-                                    amount: msg.amount,
-                                    destination: msg.from,
-                                    responseDestination: myAddress(),
-                                    customPayload: null,
-                                    forwardTonAmount: 10000000,
-                                    forwardPayload: emptySlice()
-                                }.toCell()) // Save not null body
-                .endCell();
-            nativeSendMessage(c, SendIgnoreErrors + SendRemainingValue);
+            nativeSendMessage(beginCell()
+                                .storeInt(1, 2) // internal_message + ihd_disabled
+                                .storeBool(true) // bounce
+                                .storeInt(0, 3) // bounced + from
+                                .storeAddress(self.jettonAddressA) // To
+                                .storeCoins(0) // Value
+                                .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                                .storeBool(false) // No state init (code and data null)
+                                .storeBool(true) // Body not null
+                                .storeRef(TokenTransfer{
+                                                    queryId: 0,
+                                                    amount: msg.amount,
+                                                    destination: msg.from,
+                                                    responseDestination: myAddress(),
+                                                    customPayload: null,
+                                                    forwardTonAmount: 10000000,
+                                                    forwardPayload: emptySlice()
+                                                }.toCell()) // Save not null body
+                                .endCell(), SendIgnoreErrors + SendRemainingValue);
             return;
         }
         // valid swap
-        let c: Cell = beginCell()
-            .storeInt(1, 2) // internal_message + ihd_disabled
-            .storeBool(true) // bounce
-            .storeInt(0, 3) // bounced + from
-            .storeAddress(self.jettonAddressB) // To
-            .storeCoins(0) // Value
-            .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-            .storeBool(false) // No state init (code and data null)
-            .storeBool(true) // Body not null
-            .storeRef(TokenTransfer{
-                                queryId: 0,
-                                amount: b_Amount,
-                                destination: msg.from,
-                                responseDestination: myAddress(),
-                                customPayload: null,
-                                forwardTonAmount: 10000000,
-                                forwardPayload: emptySlice()
-                            }.toCell()) // Save not null body
-            .endCell();
-        nativeSendMessage(c, SendIgnoreErrors + SendRemainingValue);
+        nativeSendMessage(beginCell()
+                            .storeInt(1, 2) // internal_message + ihd_disabled
+                            .storeBool(true) // bounce
+                            .storeInt(0, 3) // bounced + from
+                            .storeAddress(self.jettonAddressB) // To
+                            .storeCoins(0) // Value
+                            .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                            .storeBool(false) // No state init (code and data null)
+                            .storeBool(true) // Body not null
+                            .storeRef(TokenTransfer{
+                                                queryId: 0,
+                                                amount: b_Amount,
+                                                destination: msg.from,
+                                                responseDestination: myAddress(),
+                                                customPayload: null,
+                                                forwardTonAmount: 10000000,
+                                                forwardPayload: emptySlice()
+                                            }.toCell()) // Save not null body
+                            .endCell(), SendIgnoreErrors + SendRemainingValue);
         self.bAmount = self.bAmount - b_Amount;
         self.aAmount = self.aAmount + msg.amount;
         return;
@@ -131,49 +127,47 @@ contract Task3 with Deployable {
     let a_Amount: Int = (self.aAmount * 1000000000 / self.bAmount) * msg.amount / 1000000000;
     if (self.aAmount < a_Amount) {
         // return tokens to user
-        let c: Cell = beginCell()
-            .storeInt(1, 2) // internal_message + ihd_disabled
-            .storeBool(true) // bounce
-            .storeInt(0, 3) // bounced + from
-            .storeAddress(self.jettonAddressB) // To
-            .storeCoins(0) // Value
-            .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-            .storeBool(false) // No state init (code and data null)
-            .storeBool(true) // Body not null
-            .storeRef(TokenTransfer{
-                                queryId: 0,
-                                amount: msg.amount,
-                                destination: msg.from,
-                                responseDestination: myAddress(),
-                                customPayload: null,
-                                forwardTonAmount: 10000000,
-                                forwardPayload: emptySlice()
-                            }.toCell()) // Save not null body
-            .endCell();
-        nativeSendMessage(c, SendIgnoreErrors + SendRemainingValue);
+        nativeSendMessage(beginCell()
+                            .storeInt(1, 2) // internal_message + ihd_disabled
+                            .storeBool(true) // bounce
+                            .storeInt(0, 3) // bounced + from
+                            .storeAddress(self.jettonAddressB) // To
+                            .storeCoins(0) // Value
+                            .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                            .storeBool(false) // No state init (code and data null)
+                            .storeBool(true) // Body not null
+                            .storeRef(TokenTransfer{
+                                                queryId: 0,
+                                                amount: msg.amount,
+                                                destination: msg.from,
+                                                responseDestination: myAddress(),
+                                                customPayload: null,
+                                                forwardTonAmount: 10000000,
+                                                forwardPayload: emptySlice()
+                                            }.toCell()) // Save not null body
+                            .endCell(), SendIgnoreErrors + SendRemainingValue);
         return;
     }
     // valid swap
-    let c: Cell = beginCell()
-        .storeInt(1, 2) // internal_message + ihd_disabled
-        .storeBool(true) // bounce
-        .storeInt(0, 3) // bounced + from
-        .storeAddress(self.jettonAddressA) // To
-        .storeCoins(0) // Value
-        .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-        .storeBool(false) // No state init (code and data null)
-        .storeBool(true) // Body not null
-        .storeRef(TokenTransfer{
-                            queryId: 0,
-                            amount: a_Amount,
-                            destination: msg.from,
-                            responseDestination: myAddress(),
-                            customPayload: null,
-                            forwardTonAmount: 10000000,
-                            forwardPayload: emptySlice()
-                        }.toCell()) // Save not null body
-        .endCell();
-    nativeSendMessage(c, SendIgnoreErrors + SendRemainingValue);
+    nativeSendMessage(beginCell()
+                            .storeInt(1, 2) // internal_message + ihd_disabled
+                            .storeBool(true) // bounce
+                            .storeInt(0, 3) // bounced + from
+                            .storeAddress(self.jettonAddressA) // To
+                            .storeCoins(0) // Value
+                            .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                            .storeBool(false) // No state init (code and data null)
+                            .storeBool(true) // Body not null
+                            .storeRef(TokenTransfer{
+                                                queryId: 0,
+                                                amount: a_Amount,
+                                                destination: msg.from,
+                                                responseDestination: myAddress(),
+                                                customPayload: null,
+                                                forwardTonAmount: 10000000,
+                                                forwardPayload: emptySlice()
+                                            }.toCell()) // Save not null body
+                            .endCell(), SendIgnoreErrors + SendRemainingValue);
     self.aAmount = self.aAmount - a_Amount;
     self.bAmount = self.bAmount + msg.amount;
     return;
