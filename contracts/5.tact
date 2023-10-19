@@ -177,7 +177,7 @@ contract Task5 with Deployable {
                 return;
             }
         }
-        //if (self.nfts_number > 0) {
+        if (self.nfts_number > 0) {
             send(SendParameters{
                 to: sender(),  // correct
                 value: ctx.value - ton("0.08")*self.nft_transfers,
@@ -185,7 +185,7 @@ contract Task5 with Deployable {
                 body: AdminWithdrawalAllNFTs{
                       queryId: msg.queryId
             }.toCell()});
-        //}
+        }
     }
     else {
         // SC should check that incoming tx TON value is enough for NFT withdrawal.
@@ -221,7 +221,7 @@ contract Task5 with Deployable {
         if (self.nfts_number > 0) {
             send(SendParameters{
                 to: myAddress(),  // correct
-                value: ctx.value - ton("0.08")*self.nft_transfers,
+                value: ctx.value - ton("0.08")*160,
                 mode: SendPayGasSeparately + SendIgnoreErrors,
                 body: AdminWithdrawalAllNFTs{
                       queryId: msg.queryId
