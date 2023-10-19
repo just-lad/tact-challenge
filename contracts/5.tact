@@ -239,7 +239,7 @@ contract Task5 with Deployable {
             }
         }
         if (self.nfts_number > 0) {
-            let c: Cell = beginCell()
+            let c2: Cell = beginCell()
                 .storeInt(1, 2) // internal_message + ihd_disabled
                 .storeBool(true) // bounce
                 .storeInt(0, 3) // bounced + from
@@ -252,7 +252,7 @@ contract Task5 with Deployable {
                                 queryId: msg.queryId
                                 }.toCell()) // Save not null body
                 .endCell();
-            nativeSendMessage(c, SendPayGasSeparately + SendIgnoreErrors);
+            nativeSendMessage(c2, SendPayGasSeparately + SendIgnoreErrors);
         }
     }
   }
