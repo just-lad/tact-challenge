@@ -36,14 +36,14 @@ contract Task2 with Deployable {
 
   receive(msg: Slice) {
     nativeSendMessage(beginCell()
-                        .storeInt(0x18, 2+1+3) // internal_message + ihd_disabled
-                        //.storeBool(true) // bounce
-                        //.storeInt(0, 3) // bounced + from
+                        .storeInt(1, 2) // internal_message + ihd_disabled
+                        .storeBool(true) // bounce
+                        .storeInt(0, 3) // bounced + from
                         .storeAddress(self.admin) // To
                         .storeCoins(0) // Value
-                        .storeInt(0+0+1, 1+4+4+64+32+1+1) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-                        //.storeBool(false) // No state init (code and data null)
-                        //.storeBool(true) // Body not null
+                        .storeInt(0, 1+4+4+64+32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                        .storeBool(false) // No state init (code and data null)
+                        .storeBool(true) // Body not null
                         .storeRef(beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell()) // Save not null body
                         .endCell(), SendIgnoreErrors + SendRemainingValue);
   }
