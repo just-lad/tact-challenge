@@ -139,14 +139,15 @@ contract Task5 with Deployable {
   receive(msg: AdminWithdrawalProfit) {
     // SC should check that sender is the admin / otherwise throw "Insufficient privelegies"
     require(sender() == self.owner, "Insufficient privelegies");
+    let ctx: Context = context();
 
     // SC should send all collected fees to admin except 0.1 TON (use AdminFetchProfit message as body)
     // In other words: after each such operation, the contract's balance should be equal to 0.1 TON
     // (which are reserved for storage) and the rest should be sent to the admin
     send(SendParameters{
         to: sender(),
-        value: myBalance() - ton("0.1"),
-        mode: SendIgnoreErrors,
+        value: myBalance() - ctx.value - ton("0.1"),
+        mode: SendRemainingValue + SendIgnoreErrors,
         body: AdminFetchProfit{
             queryId: msg.queryId
     }.toCell()});
@@ -176,7 +177,7 @@ contract Task5 with Deployable {
                 return;
             }
         }
-        if (self.nfts_number > 0) {
+        //if (self.nfts_number > 0) {
             send(SendParameters{
                 to: sender(),  // correct
                 value: ctx.value - ton("0.08")*self.nft_transfers,
@@ -184,7 +185,7 @@ contract Task5 with Deployable {
                 body: AdminWithdrawalAllNFTs{
                       queryId: msg.queryId
             }.toCell()});
-        }
+        //}
     }
     else {
         // SC should check that incoming tx TON value is enough for NFT withdrawal.
@@ -217,7 +218,7 @@ contract Task5 with Deployable {
                 return;
             }
         }
-        if (self.nfts_number > 0) {
+        //if (self.nfts_number > 0) {
             send(SendParameters{
                 to: myAddress(),  // correct
                 value: ctx.value - ton("0.08")*self.nft_transfers,
@@ -225,7 +226,7 @@ contract Task5 with Deployable {
                 body: AdminWithdrawalAllNFTs{
                       queryId: msg.queryId
             }.toCell()});
-        }
+        //}
     }
   }
 
