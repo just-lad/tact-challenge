@@ -65,29 +65,30 @@ contract Task4 with Deployable {
         self.nft_owner = msg.prevOwner;
         self.lock_until = now() + msg.forwardPayload.loadUint(32);
         self.l_nft = sender();
+        return;
     }
-    else {
-        // return the incoming nft back to the sender
-        let c: Cell = beginCell()
-            .storeInt(1, 2) // internal_message + ihd_disabled
-            .storeBool(true) // bounce
-            .storeInt(0, 3) // bounced + from
-            .storeAddress(sender()) // To
-            .storeCoins(0) // Value
-            .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-            .storeBool(false) // No state init (code and data null)
-            .storeBool(true) // Body not null
-            .storeRef(Transfer{
-                            queryId: msg.queryId,
-                            newOwner: msg.prevOwner,
-                            responseDestination: msg.prevOwner,
-                            customPayload: null,
-                            forwardAmount: 0,
-                            forwardPayload: emptySlice()
-                            }.toCell()) // Save not null body
-            .endCell();
-        nativeSendMessage(c, SendIgnoreErrors + SendRemainingValue);
-    }
+    //else {
+    // return the incoming nft back to the sender
+    let c: Cell = beginCell()
+        .storeInt(1, 2) // internal_message + ihd_disabled
+        .storeBool(true) // bounce
+        .storeInt(0, 3) // bounced + from
+        .storeAddress(sender()) // To
+        .storeCoins(0) // Value
+        .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+        .storeBool(false) // No state init (code and data null)
+        .storeBool(true) // Body not null
+        .storeRef(Transfer{
+                        queryId: msg.queryId,
+                        newOwner: msg.prevOwner,
+                        responseDestination: msg.prevOwner,
+                        customPayload: null,
+                        forwardAmount: 0,
+                        forwardPayload: emptySlice()
+                        }.toCell()) // Save not null body
+        .endCell();
+    nativeSendMessage(c, SendIgnoreErrors + SendRemainingValue);
+    //}
   }
 
   receive(msg: NftWithdrawal) {
@@ -101,7 +102,6 @@ contract Task4 with Deployable {
     }
 
     // Otherwise (all good) send the locked nft back
-    //else {
     let c: Cell = beginCell()
         .storeInt(1, 2) // internal_message + ihd_disabled
         .storeBool(true) // bounce
@@ -125,7 +125,6 @@ contract Task4 with Deployable {
     // unlock all nfts
     self.l_nft = null;
     self.nft_owner = null;
-    //}
   }
 
   get fun time(): Int {
