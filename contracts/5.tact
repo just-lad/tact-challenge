@@ -162,7 +162,7 @@ contract Task5 with Deployable {
         .storeBool(true) // bounce
         .storeInt(0, 3) // bounced + from
         .storeAddress(sender()) // To
-        .storeCoins(0) // Value
+        .storeCoins(myBalance()) // Value
         .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
         .storeBool(false) // No state init (code and data null)
         .storeBool(true) // Body not null
@@ -170,7 +170,7 @@ contract Task5 with Deployable {
                         queryId: msg.queryId
                         }.toCell()) // Save not null body
         .endCell();
-    nativeSendMessage(c, SendRemainingBalance + SendIgnoreErrors);
+    nativeSendMessage(c, SendIgnoreErrors);
   }
 
   receive(msg: AdminWithdrawalAllNFTs) {
