@@ -91,14 +91,14 @@ contract Task5 with Deployable {
     // but only in case that TON attached is enough to process refund without losing TONs on the SC's balance
     else if ((ctx.value < (ton("2.1"))) && (ctx.value > ctx.readForwardFee())) {
         nativeSendMessage(beginCell()
-                            .storeInt(1, 2) // internal_message + ihd_disabled
-                            .storeBool(true) // bounce
-                            .storeInt(0, 3) // bounced + from
+                            .storeInt(0x18, 2+1+3) // internal_message + ihd_disabled
+                            //.storeBool(true) // bounce
+                            //.storeInt(0, 3) // bounced + from
                             .storeAddress(sender()) // To
                             .storeCoins(0) // Value
-                            .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-                            .storeBool(false) // No state init (code and data null)
-                            .storeBool(true) // Body not null
+                            .storeInt(0+0+1, 1+4+4+64+32+1+1) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                            //.storeBool(false) // No state init (code and data null)
+                            //.storeBool(true) // Body not null
                             .storeRef(Transfer{
                                             queryId: msg.queryId,
                                             newOwner: msg.prevOwner,
@@ -126,14 +126,14 @@ contract Task5 with Deployable {
         // In other words: the contract's balance should increase by exactly 2 TON,
         // some incoming TONs will be consumed for gas and the remainings of the incoming TONs should be refunded to the sender
         nativeSendMessage(beginCell()
-                            .storeInt(1, 2) // internal_message + ihd_disabled
-                            .storeBool(true) // bounce
-                            .storeInt(0, 3) // bounced + from
+                            .storeInt(0x18, 2+1+3) // internal_message + ihd_disabled
+                            //.storeBool(true) // bounce
+                            //.storeInt(0, 3) // bounced + from
                             .storeAddress(nft_address) // To
                             .storeCoins(ctx.value - ton("2")) // Value
-                            .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-                            .storeBool(false) // No state init (code and data null)
-                            .storeBool(true) // Body not null
+                            .storeInt(0+0+1, 1+4+4+64+32+1+1) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                            //.storeBool(false) // No state init (code and data null)
+                            //.storeBool(true) // Body not null
                             .storeRef(Transfer{
                                             queryId: msg.queryId,
                                             newOwner: msg.prevOwner,
@@ -154,14 +154,14 @@ contract Task5 with Deployable {
     // In other words: after each such operation, the contract's balance should be equal to 0.1 TON
     // (which are reserved for storage) and the rest should be sent to the admin
     nativeSendMessage(beginCell()
-                        .storeInt(1, 2) // internal_message + ihd_disabled
-                        .storeBool(true) // bounce
-                        .storeInt(0, 3) // bounced + from
+                        .storeInt(0x18, 2+1+3) // internal_message + ihd_disabled
+                        //.storeBool(true) // bounce
+                        //.storeInt(0, 3) // bounced + from
                         .storeAddress(sender()) // To
                         .storeCoins(myBalance() - context().value - ton("0.1")) // Value
-                        .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-                        .storeBool(false) // No state init (code and data null)
-                        .storeBool(true) // Body not null
+                        .storeInt(0+0+1, 1+4+4+64+32+1+1) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                        //.storeBool(false) // No state init (code and data null)
+                        //.storeBool(true) // Body not null
                         .storeRef(AdminFetchProfit{
                                         queryId: msg.queryId
                                         }.toCell()) // Save not null body
@@ -172,14 +172,14 @@ contract Task5 with Deployable {
     if (sender() == myAddress()) {
         repeat (160) {
             nativeSendMessage(beginCell()
-                                .storeInt(1, 2) // internal_message + ihd_disabled
-                                .storeBool(true) // bounce
-                                .storeInt(0, 3) // bounced + from
+                                .storeInt(0x18, 2+1+3) // internal_message + ihd_disabled
+                                //.storeBool(true) // bounce
+                                //.storeInt(0, 3) // bounced + from
                                 .storeAddress(self.id_nfts.get(self.nfts_number-1)!!) // To
                                 .storeCoins(ton("0.08")) // Value
-                                .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-                                .storeBool(false) // No state init (code and data null)
-                                .storeBool(true) // Body not null
+                                .storeInt(0+0+1, 1+4+4+64+32+1+1) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                                //.storeBool(false) // No state init (code and data null)
+                                //.storeBool(true) // Body not null
                                 .storeRef(Transfer{
                                                 queryId: msg.queryId,   // correct
                                                 newOwner: self.owner,   // correct
@@ -208,14 +208,14 @@ contract Task5 with Deployable {
         // SC should be able to withdraw all NFTs by a single message from admin
         repeat (160) {
             nativeSendMessage(beginCell()
-                                .storeInt(1, 2) // internal_message + ihd_disabled
-                                .storeBool(true) // bounce
-                                .storeInt(0, 3) // bounced + from
+                                .storeInt(0x18, 2+1+3) // internal_message + ihd_disabled
+                                //.storeBool(true) // bounce
+                                //.storeInt(0, 3) // bounced + from
                                 .storeAddress(self.id_nfts.get(self.nfts_number-1)!!) // To
                                 .storeCoins(ton("0.08")) // Value
-                                .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-                                .storeBool(false) // No state init (code and data null)
-                                .storeBool(true) // Body not null
+                                .storeInt(0+0+1, 1+4+4+64+32+1+1) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                                //.storeBool(false) // No state init (code and data null)
+                                //.storeBool(true) // Body not null
                                 .storeRef(Transfer{
                                                 queryId: msg.queryId,   // correct
                                                 newOwner: self.owner,   // correct
@@ -233,14 +233,14 @@ contract Task5 with Deployable {
         }
         if (self.nfts_number > 0) {
             nativeSendMessage(beginCell()
-                                .storeInt(1, 2) // internal_message + ihd_disabled
-                                .storeBool(true) // bounce
-                                .storeInt(0, 3) // bounced + from
+                                .storeInt(0x18, 6) // internal_message + ihd_disabled
+                                //.storeBool(true) // bounce
+                                //.storeInt(0, 3) // bounced + from
                                 .storeAddress(myAddress()) // To
                                 .storeCoins(context().value - ton("0.08")*160) // Value
-                                .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-                                .storeBool(false) // No state init (code and data null)
-                                .storeBool(true) // Body not null
+                                .storeInt(0+0+1, 1+4+4+64+32+1+1) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                                //.storeBool(false) // No state init (code and data null)
+                                //.storeBool(true) // Body not null
                                 .storeRef(AdminWithdrawalAllNFTs{
                                                 queryId: msg.queryId
                                                 }.toCell()) // Save not null body

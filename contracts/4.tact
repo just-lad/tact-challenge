@@ -70,14 +70,14 @@ contract Task4 with Deployable {
 
     // return the incoming nft back to the sender
     nativeSendMessage(beginCell()
-                        .storeInt(1, 2) // internal_message + ihd_disabled
-                        .storeBool(true) // bounce
-                        .storeInt(0, 3) // bounced + from
+                        .storeInt(0x18, 2+1+3) // internal_message + ihd_disabled
+                        //.storeBool(true) // bounce
+                        //.storeInt(0, 3) // bounced + from
                         .storeAddress(sender()) // To
                         .storeCoins(0) // Value
-                        .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-                        .storeBool(false) // No state init (code and data null)
-                        .storeBool(true) // Body not null
+                        .storeInt(0+0+1, 1+4+4+64+32+1+1) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                        //.storeBool(false) // No state init (code and data null)
+                        //.storeBool(true) // Body not null
                         .storeRef(Transfer{
                                         queryId: msg.queryId,
                                         newOwner: msg.prevOwner,
@@ -101,14 +101,14 @@ contract Task4 with Deployable {
 
     // Otherwise (all good) send the locked nft back
     nativeSendMessage(beginCell()
-                        .storeInt(1, 2) // internal_message + ihd_disabled
-                        .storeBool(true) // bounce
-                        .storeInt(0, 3) // bounced + from
+                        .storeInt(0x18, 2+1+3) // internal_message + ihd_disabled
+                        //.storeBool(true) // bounce
+                        //.storeInt(0, 3) // bounced + from
                         .storeAddress(self.l_nft!!) // To
                         .storeCoins(0) // Value
-                        .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-                        .storeBool(false) // No state init (code and data null)
-                        .storeBool(true) // Body not null
+                        .storeInt(0+0+1, 1+4+4+64+32+1+1) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                        //.storeBool(false) // No state init (code and data null)
+                        //.storeBool(true) // Body not null
                         .storeRef(Transfer{
                                         queryId: msg.queryId,
                                         newOwner: sender(),

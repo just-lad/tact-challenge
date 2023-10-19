@@ -76,14 +76,14 @@ contract Task3 with Deployable {
         if (self.bAmount < b_Amount) {
             // return tokens to user
             nativeSendMessage(beginCell()
-                                .storeInt(1, 2) // internal_message + ihd_disabled
-                                .storeBool(true) // bounce
-                                .storeInt(0, 3) // bounced + from
+                                .storeInt(0x18, 2+1+3) // internal_message + ihd_disabled
+                                //.storeBool(true) // bounce
+                                //.storeInt(0, 3) // bounced + from
                                 .storeAddress(self.jettonAddressA) // To
                                 .storeCoins(0) // Value
-                                .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-                                .storeBool(false) // No state init (code and data null)
-                                .storeBool(true) // Body not null
+                                .storeInt(0+0+1, 1+4+4+64+32+1+1) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                                //.storeBool(false) // No state init (code and data null)
+                                //.storeBool(true) // Body not null
                                 .storeRef(TokenTransfer{
                                                     queryId: 0,
                                                     amount: msg.amount,
@@ -98,14 +98,14 @@ contract Task3 with Deployable {
         }
         // valid swap
         nativeSendMessage(beginCell()
-                            .storeInt(1, 2) // internal_message + ihd_disabled
-                            .storeBool(true) // bounce
-                            .storeInt(0, 3) // bounced + from
+                            .storeInt(0x18, 2+1+3) // internal_message + ihd_disabled
+                            //.storeBool(true) // bounce
+                            //.storeInt(0, 3) // bounced + from
                             .storeAddress(self.jettonAddressB) // To
                             .storeCoins(0) // Value
-                            .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-                            .storeBool(false) // No state init (code and data null)
-                            .storeBool(true) // Body not null
+                            .storeInt(0+0+1, 1+4+4+64+32+1+1) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                            //.storeBool(false) // No state init (code and data null)
+                            //.storeBool(true) // Body not null
                             .storeRef(TokenTransfer{
                                                 queryId: 0,
                                                 amount: b_Amount,
@@ -128,14 +128,14 @@ contract Task3 with Deployable {
     if (self.aAmount < a_Amount) {
         // return tokens to user
         nativeSendMessage(beginCell()
-                            .storeInt(1, 2) // internal_message + ihd_disabled
-                            .storeBool(true) // bounce
-                            .storeInt(0, 3) // bounced + from
+                            .storeInt(0x18, 2+1+3) // internal_message + ihd_disabled
+                            //.storeBool(true) // bounce
+                            //.storeInt(0, 3) // bounced + from
                             .storeAddress(self.jettonAddressB) // To
                             .storeCoins(0) // Value
-                            .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-                            .storeBool(false) // No state init (code and data null)
-                            .storeBool(true) // Body not null
+                            .storeInt(0+0+1, 1+4+4+64+32+1+1) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                            //.storeBool(false) // No state init (code and data null)
+                            //.storeBool(true) // Body not null
                             .storeRef(TokenTransfer{
                                                 queryId: 0,
                                                 amount: msg.amount,
@@ -150,14 +150,14 @@ contract Task3 with Deployable {
     }
     // valid swap
     nativeSendMessage(beginCell()
-                            .storeInt(1, 2) // internal_message + ihd_disabled
-                            .storeBool(true) // bounce
-                            .storeInt(0, 3) // bounced + from
+                            .storeInt(0x18, 2+1+3) // internal_message + ihd_disabled
+                            //.storeBool(true) // bounce
+                            //.storeInt(0, 3) // bounced + from
                             .storeAddress(self.jettonAddressA) // To
                             .storeCoins(0) // Value
-                            .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
-                            .storeBool(false) // No state init (code and data null)
-                            .storeBool(true) // Body not null
+                            .storeInt(0+0+1, 1+4+4+64+32+1+1) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
+                            //.storeBool(false) // No state init (code and data null)
+                            //.storeBool(true) // Body not null
                             .storeRef(TokenTransfer{
                                                 queryId: 0,
                                                 amount: a_Amount,
