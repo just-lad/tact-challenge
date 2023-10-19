@@ -70,14 +70,12 @@ contract Task5 with Deployable {
   owner: Address;
   id_nfts: map<Int as uint16, Address>;
   nfts_number: Int;
-  nft_transfers: Int;
 
   init(seed: Int, owner: Address) {
     self.owner = owner;
     self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
     self.nfts_number = 0;
     self.id_nfts = emptyMap();
-    self.nft_transfers = 1;
   }
 
   receive(msg: OwnershipAssigned) {
@@ -172,15 +170,13 @@ contract Task5 with Deployable {
             self.nfts_number = self.nfts_number - 1;
             if (self.nfts_number == 0) {
                 self.id_nfts = emptyMap();
-                self.nft_transfers = 1;
                 return;
             }
         }
         if (self.nfts_number > 0) {
-            self.nft_transfers = self.nft_transfers + 1;
             send(SendParameters{
                 to: sender(),  // correct
-                value: ctx.value - ton("0.08")*160*self.nft_transfers,
+                value: ctx.value - ton("0.08")*320,
                 mode: SendPayGasSeparately + SendIgnoreErrors,
                 body: AdminWithdrawalAllNFTs{
                       queryId: msg.queryId
@@ -211,10 +207,8 @@ contract Task5 with Deployable {
                     forwardPayload: emptySlice() // correct
             }.toCell()});
             self.nfts_number = self.nfts_number - 1;
-            self.nft_transfers = self.nft_transfers + 1;
             if (self.nfts_number == 0) {
                 self.id_nfts = emptyMap();
-                self.nft_transfers = 0;
                 return;
             }
         }
