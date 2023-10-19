@@ -151,18 +151,16 @@ contract Task5 with Deployable {
   receive(msg: AdminWithdrawalProfit) {
     // SC should check that sender is the admin / otherwise throw "Insufficient privelegies"
     require(sender() == self.owner, "Insufficient privelegies");
-    //let ctx: Context = context();
 
     // SC should send all collected fees to admin except 0.1 TON (use AdminFetchProfit message as body)
     // In other words: after each such operation, the contract's balance should be equal to 0.1 TON
     // (which are reserved for storage) and the rest should be sent to the admin
-    nativeReserve(ton("0.1"), 0+8);
     let c: Cell = beginCell()
         .storeInt(1, 2) // internal_message + ihd_disabled
         .storeBool(true) // bounce
         .storeInt(0, 3) // bounced + from
         .storeAddress(sender()) // To
-        .storeCoins(myBalance()) // Value
+        .storeCoins(myBalance() - context().value - ton("0.1")) // Value
         .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
         .storeBool(false) // No state init (code and data null)
         .storeBool(true) // Body not null
@@ -170,11 +168,10 @@ contract Task5 with Deployable {
                         queryId: msg.queryId
                         }.toCell()) // Save not null body
         .endCell();
-    nativeSendMessage(c, SendIgnoreErrors);
+    nativeSendMessage(c, SendRemainingValue + SendIgnoreErrors);
   }
 
   receive(msg: AdminWithdrawalAllNFTs) {
-    let ctx: Context = context();
     if (sender() == myAddress()) {
         repeat (160) {
             let c: Cell = beginCell()
@@ -206,7 +203,7 @@ contract Task5 with Deployable {
     else {
         // SC should check that incoming tx TON value is enough for NFT withdrawal.
         // Specifically, at least: (1 + totalNftsHeld * 0.08) TONs. Otherwise throw "Insufficent funds"
-        require(ctx.value >= (ton("1") + ton("0.08")*(self.nfts_number)), "Insufficent funds");
+        require(context().value >= (ton("1") + ton("0.08")*(self.nfts_number)), "Insufficent funds");
 
         // SC should check that sender is the admin, throw "Invalid sender" otherwise
         require(sender() == self.owner, "Invalid sender");
@@ -245,7 +242,7 @@ contract Task5 with Deployable {
                 .storeBool(true) // bounce
                 .storeInt(0, 3) // bounced + from
                 .storeAddress(myAddress()) // To
-                .storeCoins(ctx.value - ton("0.08")*160) // Value
+                .storeCoins(context().value - ton("0.08")*160) // Value
                 .storeInt(0, 1 + 4 + 4 + 64 + 32) // currency_collection + IHR fees + Fwd fees + CreatedLT + CreatedAt
                 .storeBool(false) // No state init (code and data null)
                 .storeBool(true) // Body not null
