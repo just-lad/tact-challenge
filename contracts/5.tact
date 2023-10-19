@@ -173,15 +173,6 @@ contract Task5 with Deployable {
                 return;
             }
         }
-        /*if (self.nfts_number > 0) {
-            send(SendParameters{
-                to: sender(),  // correct
-                value: ctx.value - ton("0.08")*320,
-                mode: SendPayGasSeparately + SendIgnoreErrors,
-                body: AdminWithdrawalAllNFTs{
-                      queryId: msg.queryId
-            }.toCell()});
-        }*/
     }
     else {
         // SC should check that incoming tx TON value is enough for NFT withdrawal.

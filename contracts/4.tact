@@ -65,8 +65,9 @@ contract Task4 with Deployable {
         self.nft_owner = msg.prevOwner;
         self.lock_until = now() + msg.forwardPayload.loadUint(32);
         self.l_nft = sender();
+        return;
     }
-    else {
+    //else {
         // return the incoming nft back to the sender
         send(SendParameters{
             to: sender(),
@@ -80,7 +81,7 @@ contract Task4 with Deployable {
                 forwardAmount: 0,
                 forwardPayload: emptySlice()
             }.toCell()});
-    }
+    //}
   }
 
   receive(msg: NftWithdrawal) {
@@ -90,10 +91,11 @@ contract Task4 with Deployable {
     // If time has not passed
     if (self.lock_until > now()) {
         self.reply("NFT is still locked".asComment());
+        return;
     }
 
     // Otherwise (all good) send the locked nft back
-    else {
+    //else {
         send(SendParameters{
             to: self.l_nft!!,
             value: 0,
@@ -110,7 +112,7 @@ contract Task4 with Deployable {
         // unlock all nfts
         self.l_nft = null;
         self.nft_owner = null;
-    }
+    //}
   }
 
   get fun time(): Int {

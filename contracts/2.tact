@@ -35,6 +35,14 @@ contract Task2 with Deployable {
   }
 
   receive(msg: Slice) {
+    /*let out_msg: Cell = beginCell()
+                       .storeUint(0x18, 6)
+                       .storeAddress(self.admin)
+                       .storeCoins(0)
+                       .storeUint(1, 1+4+4+64+32+1+1)
+                       .storeRef(beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell())
+                       .endCell();
+    nativeSendMessage(out_msg, 64);*/
     send(SendParameters{
         to: self.admin,
         value: 0,
